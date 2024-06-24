@@ -8,74 +8,9 @@ $Title = 'PowerExpressGUI'
 $Author = 'Joel Fargas (github.com/sapphsky)'
 $CurrentVersion = '1.0.0'
 
-# [xml]$XAML = Get-Content "MainWindow.xaml"
-[xml]$XAML = @'
-<Window
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:WpfApp2"
-        Title="PowerExpressGUI"
-        Height="450"
-        Width="800"
-        Topmost="True"
-        WindowStartupLocation="CenterScreen"
-        ResizeMode="NoResize">
-    <Grid>
-        <Label Content="PowerExpressGUI"
-               HorizontalAlignment="Center"
-               Margin="0,10,0,0"
-               VerticalAlignment="Top"
-               FontSize="36"
-               FontWeight="Bold">
-            <Label.Foreground>
-                <LinearGradientBrush EndPoint="0.5,1"
-                                     StartPoint="0.5,0">
-                    <GradientStop Color="#FFC4C4FF"/>
-                    <GradientStop Color="#FFFFC4C4"
-                                  Offset="1"/>
-                </LinearGradientBrush>
-            </Label.Foreground>
-        </Label>
-        <CheckBox Content="Automatically perform all steps"
-                  HorizontalAlignment="Right"
-                  Margin="0,0,10,10"
-                  VerticalAlignment="Bottom"
-                  IsChecked="True"/>
-        <Label Content="Version 1.0.0 | Made with PowerShell"
-               VerticalAlignment="Bottom"
-               FontSize="10"
-               Foreground="White"
-               HorizontalAlignment="Left"/>
-        <TabControl BorderBrush="#00ACACAC"
-                    Background="Transparent"
-                    Margin="10,10,10,30">
-            <TabItem Header="TabItem">
-                <Grid/>
-            </TabItem>
-            <TabItem Header="TabItem">
-                <Grid/>
-            </TabItem>
-            <TabItem Height="20"
-                     Header="TabItem"
-                     Width="54">
-                <Grid/>
-            </TabItem>
-            <TabItem Height="20"
-                     Header="TabItem"
-                     Width="54">
-                <Grid/>
-            </TabItem>
-            <TabItem Height="20"
-                     Header="TabItem"
-                     Width="54">
-                <Grid/>
-            </TabItem>
-        </TabControl>
-    </Grid>
-</Window>
-'@
-# $XAML.Window.RemoveAttribute('x:Class')
-# $XAML.Window.RemoveAttribute('mc:Ignorable')
+[xml]$XAML = Get-Content "MainWindow.xaml"
+$XAML.Window.RemoveAttribute('x:Class')
+$XAML.Window.RemoveAttribute('mc:Ignorable')
 $XAMLReader = New-Object System.Xml.XmlNodeReader $XAML
 $MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader)
 
@@ -85,7 +20,7 @@ function RunInPwsh($Command) {
   Start-Process powershell -Wait -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -NoExit -NonInteractive -NoLogo -Command $Command"
 }
 
-# Connect to 2ARTech network
+# Connect to network
 function ConnectToWifi {
   Write-Host 'Connecting to 2ARTech network...';
   netsh wlan connect ssid=$NetworkSSID name='Test' key=$NetworkPassword
@@ -164,5 +99,4 @@ function BootToFirmware {
   }
 }
 
-# RunInPwsh(GenerateBatteryReport)
 $MainWindow.ShowDialog() | Out-Null
