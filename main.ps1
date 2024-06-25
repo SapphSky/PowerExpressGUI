@@ -19,9 +19,6 @@ $CurrentVersion = '1.0.0'
         Topmost="True"
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
-    <Window.Background>
-        <ImageBrush ImageSource="/img104.jpg"/>
-    </Window.Background>
     <Grid>
         <Label Content="PowerExpressGUI"
                HorizontalAlignment="Center"
