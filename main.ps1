@@ -18,6 +18,8 @@ $CurrentVersion = '1.0.0'
         Width="800"
         Topmost="True"
         WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        WindowState="Maximized"
         ResizeMode="NoResize">
     <Grid>
         <Label Content="PowerExpressGUI"
