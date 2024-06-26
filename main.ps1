@@ -39,61 +39,38 @@ $CurrentVersion = '1.0.0'
                   HorizontalAlignment="Right"
                   Margin="0,0,10,10"
                   VerticalAlignment="Bottom"
-                  IsChecked="True"/>
+                  IsChecked="False"/>
         <Label Content="Version 1.0.0 | Made with PowerShell"
                VerticalAlignment="Bottom"
                FontSize="10"
                Foreground="White"
                HorizontalAlignment="Left"/>
-        <Grid Margin="10,320,0,28">
-            <CheckBox Content="Connected to Internet"
-                      HorizontalAlignment="Left"
-                      Margin="10,10,0,0"
-                      VerticalAlignment="Top"
-                      IsEnabled="False"
-                      IsChecked="False"/>
-            <CheckBox HorizontalAlignment="Left"
-                      Margin="10,30,0,0"
-                      VerticalAlignment="Top"
-                      IsEnabled="False"
-                      IsChecked="False"
-                      Content="Install Driver Updates"/>
-            <CheckBox Content="Generate Battery Report"
-                      HorizontalAlignment="Left"
-                      VerticalAlignment="Top"
-                      IsEnabled="False"
-                      IsChecked="False"
-                      Margin="10,50,0,0"/>
-            <CheckBox Content="Check for Enrollment"
-                      HorizontalAlignment="Left"
-                      VerticalAlignment="Top"
-                      IsEnabled="False"
-                      IsChecked="False"
-                      Margin="10,70,0,0"/>
-        </Grid>
         <TabControl BorderBrush="#00ACACAC"
                     Background="Transparent"
                     Margin="10,10,10,30">
-            <TabItem Header="TabItem">
-                <Grid/>
+            <TabItem Header="Home">
+                <Grid>
+                  <Stack>
+                    <Button Name="InstallDriverUpdateButton" Content="Install Driver Updates" />
+                    <Button Name="GenerateBatteryReportButton" Content="Generate Battery Report" />
+                    <Button Name="GenerateEnrollmentReportButton" Content="Generate Enrollment Report" />
+                    <Button Name="GetActivationStatus" Content="Check Activation Status" />
+                  </Stack>
+                </Grid>
             </TabItem>
-            <TabItem Header="TabItem">
-                <Grid/>
+            <TabItem Header="Battery Report">
+                <Grid>
+                  <WebBrowser x:Name="BatteryReportViewport"
+                              Source="C:\battery-report.html"/>
+                </Grid>
             </TabItem>
             <TabItem Height="20"
-                     Header="TabItem"
+                     Header="Enrollment Report"
                      Width="54">
-                <Grid/>
-            </TabItem>
-            <TabItem Height="20"
-                     Header="TabItem"
-                     Width="54">
-                <Grid/>
-            </TabItem>
-            <TabItem Height="20"
-                     Header="TabItem"
-                     Width="54">
-                <Grid/>
+                <Grid>
+                  <WebBrowser x:Name="EnrollmentStatusViewport"
+                              Source="C:\enrollment-status.html"/>
+                </Grid>
             </TabItem>
         </TabControl>
     </Grid>
@@ -105,6 +82,21 @@ $XAMLReader = New-Object System.Xml.XmlNodeReader $XAML
 $MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader)
 
 $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $MainWindow.FindName($_.Name) }
+
+# XAML objects
+$MainWindow.X = $MainWindow.Window.FindName("InstallDriverUpdateButton")
+$MainWindow.X.Add_Click({ InstallPSWindowsUpdate })
+
+$MainWindow.Y = $MainWindow.Window.FindName("GenerateBatteryReportButton")
+$MainWindow.Y.Add_Click({ GenerateBatteryReport })
+
+$MainWindow.Z = $MainWindow.Window.FindName("GenerateEnrollmentReportButton")
+$MainWindow.Z.Add_Click({ GetEnrollmentStatus })
+
+$MainWindow.W = $MainWindow.Window.FindName("CheckActivationStatusButton")
+$MainWindow.W.Add_Click({ GetActivationStatus })
+
+$MainWindow.BatteryReportViewport = $MainWindow.Window.FindName("BatteryReportViewport")
 
 function RunInPwsh($Command) {
   Start-Process powershell -Wait -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -NoExit -NonInteractive -NoLogo -Command $Command"
@@ -130,34 +122,37 @@ function ResetNetwork {
 
 # Install PSWindowsUpdate module and check for driver updates
 function InstallPSWindowsUpdate {
-  $AttemptedInstall = $false
-
-  while ($AttemptedInstall -eq $false) {
-    if (Get-Module -Name 'PSWindowsUpdate' -ListAvailable) {
-      Write-Host 'Checking for driver updates...';
-      Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose;
-      Write-Host 'Driver updates completed.';
-      exit;
-    }
-    else {
-      Write-Host 'Installing the PSWindowsUpdate module...';
-      Install-Module -Name 'PSWindowsUpdate' -Force;
-      $AttemptedInstall = $true;
-    }
+  function Perform {
+    Write-Host 'Checking for driver updates...';
+    Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose;
+    Write-Host 'Driver updates completed.';
   }
 
-  Write-Host 'Failed to install PSWindowsUpdate. Aborting.';
-  exit;
+  if (Get-Module -Name 'PSWindowsUpdate' -ListAvailable) {
+    Perform;
+  }
+  else {
+    Write-Host 'Installing the PSWindowsUpdate module...';
+    Install-Module -Name 'PSWindowsUpdate' -Force;
+    Start-Sleep -Seconds 2;
+
+    if (Get-Module -Name 'PSWindowsUpdate' -ListAvailable) {
+      Perform;
+    }
+    else {
+      Write-Host 'Unable to find PSWindowsUpdate module. Aborting.';
+    }
+  }
 }
 
 # Generate battery report
 function GenerateBatteryReport {
   Write-Host 'Generating battery report...';
-  powercfg /batteryreport /output 'C:\battery_report.html';
+  powercfg /batteryreport /output 'C:\battery-report.html';
 
-  if (Test-Path -Path 'C:\battery_report.html') {
-    Write-Host 'Battery report created at C:\battery_report.html';
-    Start-Process 'C:\battery_report.html';
+  if (Test-Path -Path 'C:\battery-report.html') {
+    Write-Host 'Battery report created at C:\battery-report.html';
+    # Start-Process 'C:\battery-report.html';
     exit;
   }
   else {
@@ -176,6 +171,10 @@ function GetEnrollmentStatus {
   exit;
 }
 
+function GetActivationStatus {
+  irm https://get.activated.win | iex
+}
+
 # Restart and boot to firmware settings
 function BootToFirmware {
   $Title = 'Boot to Firmware Settings'
@@ -190,3 +189,6 @@ function BootToFirmware {
 }
 
 $MainWindow.ShowDialog() | Out-Null
+
+# Clean up
+Write-Host 'Cleaning up...';
