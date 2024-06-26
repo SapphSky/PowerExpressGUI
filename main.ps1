@@ -8,78 +8,6 @@ $Title = 'PowerExpressGUI'
 $Author = 'Joel Fargas (github.com/sapphsky)'
 $CurrentVersion = '1.0.0'
 
-[xml]$XAML = @'
-<Window x:Class="MainWindow"
-        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:local="clr-namespace:WpfApp2"
-        Title="PowerExpressGUI"
-        Height="450"
-        Width="800"
-        Topmost="True"
-        WindowStartupLocation="CenterScreen"
-        WindowStyle="None"
-        WindowState="Maximized"
-        ResizeMode="NoResize">
-    <Grid>
-        <Label Content="PowerExpressGUI"
-               HorizontalAlignment="Center"
-               Margin="0,10,0,0"
-               VerticalAlignment="Top"
-               FontSize="36"
-               FontWeight="Bold">
-            <Label.Foreground>
-                <LinearGradientBrush EndPoint="0.5,1"
-                                     StartPoint="0.5,0">
-                    <GradientStop Color="#FFC4C4FF"/>
-                    <GradientStop Color="#FFFFC4C4"
-                                  Offset="1"/>
-                </LinearGradientBrush>
-            </Label.Foreground>
-        </Label>
-        <CheckBox Content="Automatically perform all steps"
-                  HorizontalAlignment="Right"
-                  Margin="0,0,10,10"
-                  VerticalAlignment="Bottom"
-                  IsChecked="False"/>
-        <Label Content="Version 1.0.0 | Made with PowerShell"
-               VerticalAlignment="Bottom"
-               FontSize="10"
-               HorizontalAlignment="Left"/>
-        <TabControl BorderBrush="#00ACACAC"
-                    Background="Transparent"
-                    Margin="10,10,10,30">
-            <TabItem Header="Home">
-                <Grid>
-                  <Button x:Name="InstallDriverUpdateButton" Margin="10, 20, 10, 0" Height="20" Content="Install Driver Updates" />
-                  <Button x:Name="GenerateBatteryReportButton" Margin="10, 40, 10, 0" Height="20" Content="Generate Battery Report" />
-                  <Button x:Name="GenerateEnrollmentReportButton" Margin="10, 60, 10, 0" Height="20" Content="Generate Enrollment Report" />
-                  <Button x:Name="GetActivationStatusButton" Margin="10, 80, 10, 0" Height="20" Content="Check Activation Status" />
-                </Grid>
-            </TabItem>
-            <TabItem Header="Battery Report">
-                <Grid>
-                  <WebBrowser x:Name="BatteryReportViewport"
-                              Source="C:\battery-report.html"/>
-                </Grid>
-            </TabItem>
-            <TabItem Header="Enrollment Report">
-                <Grid>
-                  <WebBrowser x:Name="EnrollmentStatusViewport"
-                              Source="C:\enrollment-status.txt"/>
-                </Grid>
-            </TabItem>
-        </TabControl>
-    </Grid>
-</Window>
-'@
-$XAML.Window.RemoveAttribute('x:Class')
-$XAML.Window.RemoveAttribute('mc:Ignorable')
-$XAMLReader = New-Object System.Xml.XmlNodeReader $XAML
-$MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader)
-
-$XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $MainWindow.FindName($_.Name) }
-
 # XAML objects
 $DriverUpdateButton = $MainWindow.Window.FindName("InstallDriverUpdateButton")
 $DriverUpdateButton.Add_Click({ InstallPSWindowsUpdate })
@@ -192,5 +120,77 @@ function BootToFirmware {
 
 RunInPwsh(GenerateBatteryReport)
 RunInPwsh(GetEnrollmentStatus)
+
+[xml]$XAML = @'
+<Window x:Class="MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:local="clr-namespace:WpfApp2"
+        Title="PowerExpressGUI"
+        Height="450"
+        Width="800"
+        Topmost="True"
+        WindowStartupLocation="CenterScreen"
+        WindowStyle="None"
+        WindowState="Maximized"
+        ResizeMode="NoResize">
+    <Grid>
+        <Label Content="PowerExpressGUI"
+               HorizontalAlignment="Center"
+               Margin="0,10,0,0"
+               VerticalAlignment="Top"
+               FontSize="36"
+               FontWeight="Bold">
+            <Label.Foreground>
+                <LinearGradientBrush EndPoint="0.5,1"
+                                     StartPoint="0.5,0">
+                    <GradientStop Color="#FFC4C4FF"/>
+                    <GradientStop Color="#FFFFC4C4"
+                                  Offset="1"/>
+                </LinearGradientBrush>
+            </Label.Foreground>
+        </Label>
+        <CheckBox Content="Automatically perform all steps"
+                  HorizontalAlignment="Right"
+                  Margin="0,0,10,10"
+                  VerticalAlignment="Bottom"
+                  IsChecked="False"/>
+        <Label Content="Version 1.0.0 | Made with PowerShell"
+               VerticalAlignment="Bottom"
+               FontSize="10"
+               HorizontalAlignment="Left"/>
+        <TabControl BorderBrush="#00ACACAC"
+                    Background="Transparent"
+                    Margin="10,10,10,30">
+            <TabItem Header="Home">
+                <Grid>
+                  <Button x:Name="InstallDriverUpdateButton" Margin="10, 20, 10, 0" Height="20" Content="Install Driver Updates" />
+                  <Button x:Name="GenerateBatteryReportButton" Margin="10, 40, 10, 0" Height="20" Content="Generate Battery Report" />
+                  <Button x:Name="GenerateEnrollmentReportButton" Margin="10, 60, 10, 0" Height="20" Content="Generate Enrollment Report" />
+                  <Button x:Name="GetActivationStatusButton" Margin="10, 80, 10, 0" Height="20" Content="Check Activation Status" />
+                </Grid>
+            </TabItem>
+            <TabItem Header="Battery Report">
+                <Grid>
+                  <WebBrowser x:Name="BatteryReportViewport"
+                              Source="C:\battery-report.html"/>
+                </Grid>
+            </TabItem>
+            <TabItem Header="Enrollment Report">
+                <Grid>
+                  <WebBrowser x:Name="EnrollmentStatusViewport"
+                              Source="C:\enrollment-status.txt"/>
+                </Grid>
+            </TabItem>
+        </TabControl>
+    </Grid>
+</Window>
+'@
+$XAML.Window.RemoveAttribute('x:Class')
+$XAML.Window.RemoveAttribute('mc:Ignorable')
+$XAMLReader = New-Object System.Xml.XmlNodeReader $XAML
+$MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader)
+
+$XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $MainWindow.FindName($_.Name) }
 
 $MainWindow.ShowDialog() | Out-Null
