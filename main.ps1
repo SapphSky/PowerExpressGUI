@@ -51,10 +51,10 @@ $CurrentVersion = '1.0.0'
             <TabItem Header="Home">
                 <Grid>
                   <Stack>
-                    <Button Name="InstallDriverUpdateButton" Content="Install Driver Updates" />
-                    <Button Name="GenerateBatteryReportButton" Content="Generate Battery Report" />
-                    <Button Name="GenerateEnrollmentReportButton" Content="Generate Enrollment Report" />
-                    <Button Name="GetActivationStatus" Content="Check Activation Status" />
+                    <Button x:Name="InstallDriverUpdateButton" Content="Install Driver Updates" />
+                    <Button x:Name="GenerateBatteryReportButton" Content="Generate Battery Report" />
+                    <Button x:Name="GenerateEnrollmentReportButton" Content="Generate Enrollment Report" />
+                    <Button x:Name="GetActivationStatus" Content="Check Activation Status" />
                   </Stack>
                 </Grid>
             </TabItem>
@@ -69,7 +69,7 @@ $CurrentVersion = '1.0.0'
                      Width="54">
                 <Grid>
                   <WebBrowser x:Name="EnrollmentStatusViewport"
-                              Source="C:\enrollment-status.html"/>
+                              Source="C:\enrollment-status.txt"/>
                 </Grid>
             </TabItem>
         </TabControl>
@@ -95,8 +95,6 @@ $MainWindow.Z.Add_Click({ GetEnrollmentStatus })
 
 $MainWindow.W = $MainWindow.Window.FindName("CheckActivationStatusButton")
 $MainWindow.W.Add_Click({ GetActivationStatus })
-
-$MainWindow.BatteryReportViewport = $MainWindow.Window.FindName("BatteryReportViewport")
 
 function RunInPwsh($Command) {
   Start-Process powershell -Wait -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -NoExit -NonInteractive -NoLogo -Command $Command"
@@ -164,10 +162,10 @@ function GenerateBatteryReport {
 # Check if the device is enrolled in MDM
 function GetEnrollmentStatus {
   Write-Host 'Checking enrollment status...';
-  dsregcmd /status | Out-File -FilePath 'C:\enrollment_status.txt';
+  dsregcmd /status | Out-File -FilePath 'C:\enrollment-status.txt';
   $EnrollmentStatus = Get-WmiObject -Class Win32_ComputerSystem | Select-Object -ExpandProperty PartOfDomain;
-  "PartOfDomain: $EnrollmentStatus" | Out-File -Append -FilePath 'C:\enrollment_status.txt'; 
-  Write-Host 'Enrollment status saved to C:\enrollment_status.txt';
+  "PartOfDomain: $EnrollmentStatus" | Out-File -Append -FilePath 'C:\enrollment-status.txt'; 
+  Write-Host 'Enrollment status saved to C:\enrollment-status.txt';
   exit;
 }
 
