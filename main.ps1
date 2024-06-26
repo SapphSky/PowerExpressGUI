@@ -189,6 +189,3 @@ function BootToFirmware {
 }
 
 $MainWindow.ShowDialog() | Out-Null
-
-# Clean up
-Write-Host 'Cleaning up...';
