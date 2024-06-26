@@ -51,10 +51,10 @@ $CurrentVersion = '1.0.0'
                     Margin="10,10,10,30">
             <TabItem Header="Home">
                 <Grid>
-                  <Button x:Name="InstallDriverUpdateButton" Margin="20, 20, 0, 0" Height="16" Content="Install Driver Updates" />
-                  <Button x:Name="GenerateBatteryReportButton" Margin="20, 40, 0, 0" Height="16" Content="Generate Battery Report" />
-                  <Button x:Name="GenerateEnrollmentReportButton" Margin="20, 60, 0, 0" Height="16" Content="Generate Enrollment Report" />
-                  <Button x:Name="GetActivationStatusButton" Margin="20, 80, 0, 0" Height="16" Content="Check Activation Status" />
+                  <Button x:Name="InstallDriverUpdateButton" Margin="10, 20, 10, 0" Height="20" Content="Install Driver Updates" />
+                  <Button x:Name="GenerateBatteryReportButton" Margin="10, 40, 10, 0" Height="20" Content="Generate Battery Report" />
+                  <Button x:Name="GenerateEnrollmentReportButton" Margin="10, 60, 10, 0" Height="20" Content="Generate Enrollment Report" />
+                  <Button x:Name="GetActivationStatusButton" Margin="10, 80, 10, 0" Height="20" Content="Check Activation Status" />
                 </Grid>
             </TabItem>
             <TabItem Header="Battery Report">
@@ -81,17 +81,17 @@ $MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader)
 $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $MainWindow.FindName($_.Name) }
 
 # XAML objects
-$MainWindow.X = $MainWindow.Window.FindName("InstallDriverUpdateButton")
-$MainWindow.X.Add_Click({ InstallPSWindowsUpdate })
+$DriverUpdateButton = $MainWindow.Window.FindName("InstallDriverUpdateButton")
+$DriverUpdateButton.Add_Click({ InstallPSWindowsUpdate })
 
-$MainWindow.Y = $MainWindow.Window.FindName("GenerateBatteryReportButton")
-$MainWindow.Y.Add_Click({ GenerateBatteryReport })
+$BatteryReportButton = $MainWindow.Window.FindName("GenerateBatteryReportButton")
+$BatteryReportButton.Add_Click({ GenerateBatteryReport })
 
-$MainWindow.Z = $MainWindow.Window.FindName("GenerateEnrollmentReportButton")
-$MainWindow.Z.Add_Click({ GetEnrollmentStatus })
+$EnrollmentReportButton = $MainWindow.Window.FindName("GenerateEnrollmentReportButton")
+$EnrollmentReportButton.Add_Click({ GetEnrollmentStatus })
 
-$MainWindow.W = $MainWindow.Window.FindName("CheckActivationStatusButton")
-$MainWindow.W.Add_Click({ GetActivationStatus })
+$ActivationStatusButton = $MainWindow.Window.FindName("CheckActivationStatusButton")
+$ActivationStatusButton.Add_Click({ GetActivationStatus })
 
 function RunInPwsh($Command) {
   Start-Process powershell -Wait -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -NoExit -NonInteractive -NoLogo -Command $Command"
@@ -101,7 +101,7 @@ function RunInPwsh($Command) {
 function ConnectToWifi {
   Write-Host 'Connecting to 2ARTech network...';
   netsh wlan connect ssid=$NetworkSSID name='Test' key=$NetworkPassword
-  exit;
+  # exit;
 }
 
 # Clear network settings
@@ -112,7 +112,7 @@ function ResetNetwork {
   netsh int ip reset
   netsh winsock reset
   Write-Host 'Network stack reset.';
-  exit;
+  # exit;
 }
 
 # Install PSWindowsUpdate module and check for driver updates
@@ -147,12 +147,11 @@ function GenerateBatteryReport {
 
   if (Test-Path -Path 'C:\battery-report.html') {
     Write-Host 'Battery report created at C:\battery-report.html';
-    # Start-Process 'C:\battery-report.html';
-    exit;
+    # exit;
   }
   else {
     Write-Host 'Error: Battery report failed to generate.';
-    exit;
+    # exit;
   }
 }
 
@@ -160,10 +159,18 @@ function GenerateBatteryReport {
 function GetEnrollmentStatus {
   Write-Host 'Checking enrollment status...';
   dsregcmd /status | Out-File -FilePath 'C:\enrollment-status.txt';
-  $EnrollmentStatus = Get-WmiObject -Class Win32_ComputerSystem | Select-Object -ExpandProperty PartOfDomain;
-  "PartOfDomain: $EnrollmentStatus" | Out-File -Append -FilePath 'C:\enrollment-status.txt'; 
-  Write-Host 'Enrollment status saved to C:\enrollment-status.txt';
-  exit;
+
+  # $EnrollmentStatus = Get-WmiObject -Class Win32_ComputerSystem | Select-Object -ExpandProperty PartOfDomain;
+  # "PartOfDomain: $EnrollmentStatus" | Out-File -Append -FilePath 'C:\enrollment-status.txt'; 
+
+  if (Test-Path -Path 'C:\enrollment-status.txt') {
+    Write-Host 'Battery report created at C:\enrollment-status.txt';
+    # exit;
+  }
+  else {
+    Write-Host 'Error: Battery report failed to generate.';
+    # exit;
+  }
 }
 
 function GetActivationStatus {
@@ -182,5 +189,8 @@ function BootToFirmware {
     shutdown /r /fw /t 5
   }
 }
+
+RunInPwsh(GenerateBatteryReport)
+RunInPwsh(GetEnrollmentStatus)
 
 $MainWindow.ShowDialog() | Out-Null
