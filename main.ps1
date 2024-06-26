@@ -52,12 +52,10 @@ $CurrentVersion = '1.0.0'
                     Margin="10,10,10,30">
             <TabItem Header="Home">
                 <Grid>
-                  <Stack>
-                    <Button x:Name="InstallDriverUpdateButton" Content="Install Driver Updates" />
-                    <Button x:Name="GenerateBatteryReportButton" Content="Generate Battery Report" />
-                    <Button x:Name="GenerateEnrollmentReportButton" Content="Generate Enrollment Report" />
-                    <Button x:Name="GetActivationStatus" Content="Check Activation Status" />
-                  </Stack>
+                  <Button x:Name="InstallDriverUpdateButton" Margin="0, 0, 10, 10" Content="Install Driver Updates" />
+                  <Button x:Name="GenerateBatteryReportButton" Margin="0, 0, 10, 30" Content="Generate Battery Report" />
+                  <Button x:Name="GenerateEnrollmentReportButton" Margin="0, 0, 10, 50" Content="Generate Enrollment Report" />
+                  <Button x:Name="GetActivationStatus" Margin="0, 0, 10, 70" Content="Check Activation Status" />
                 </Grid>
             </TabItem>
             <TabItem Header="Battery Report">
@@ -66,9 +64,7 @@ $CurrentVersion = '1.0.0'
                               Source="C:\battery-report.html"/>
                 </Grid>
             </TabItem>
-            <TabItem Height="20"
-                     Header="Enrollment Report"
-                     Width="54">
+            <TabItem Header="Enrollment Report">
                 <Grid>
                   <WebBrowser x:Name="EnrollmentStatusViewport"
                               Source="C:\enrollment-status.txt"/>
