@@ -45,17 +45,16 @@ $CurrentVersion = '1.0.0'
         <Label Content="Version 1.0.0 | Made with PowerShell"
                VerticalAlignment="Bottom"
                FontSize="10"
-               Foreground="White"
                HorizontalAlignment="Left"/>
         <TabControl BorderBrush="#00ACACAC"
                     Background="Transparent"
                     Margin="10,10,10,30">
             <TabItem Header="Home">
                 <Grid>
-                  <Button x:Name="InstallDriverUpdateButton" Margin="0, 0, 10, 10" Content="Install Driver Updates" />
-                  <Button x:Name="GenerateBatteryReportButton" Margin="0, 0, 10, 30" Content="Generate Battery Report" />
-                  <Button x:Name="GenerateEnrollmentReportButton" Margin="0, 0, 10, 50" Content="Generate Enrollment Report" />
-                  <Button x:Name="GetActivationStatus" Margin="0, 0, 10, 70" Content="Check Activation Status" />
+                  <Button x:Name="InstallDriverUpdateButton" Margin="20, 20, 0, 0" Height="16" Content="Install Driver Updates" />
+                  <Button x:Name="GenerateBatteryReportButton" Margin="20, 40, 0, 0" Height="16" Content="Generate Battery Report" />
+                  <Button x:Name="GenerateEnrollmentReportButton" Margin="20, 60, 0, 0" Height="16" Content="Generate Enrollment Report" />
+                  <Button x:Name="GetActivationStatusButton" Margin="20, 80, 0, 0" Height="16" Content="Check Activation Status" />
                 </Grid>
             </TabItem>
             <TabItem Header="Battery Report">
