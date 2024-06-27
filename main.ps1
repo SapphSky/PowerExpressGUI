@@ -81,11 +81,11 @@ function GetEnrollmentStatus {
   # "PartOfDomain: $EnrollmentStatus" | Out-File -Append -FilePath 'C:\enrollment-status.txt'; 
 
   if (Test-Path -Path 'C:\enrollment-status.txt') {
-    Write-Host 'Battery report created at C:\enrollment-status.txt';
+    Write-Host 'Enrollment report created at C:\enrollment-status.txt';
     # exit;
   }
   else {
-    Write-Host 'Error: Battery report failed to generate.';
+    Write-Host 'Error: Enrollment report failed to generate.';
     # exit;
   }
 }
