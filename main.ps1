@@ -47,7 +47,19 @@ function InstallPSWindowsUpdate {
   }
 }
 
-# Generate battery report
+function GetComputerInfo {
+  Write-Host 'Getting Computer Info...';
+  Get-ComputerInfo | Out-File -FilePath 'C:\computer-info.txt';
+  Start-Sleep -Seconds 1;
+
+  if (Test-Path -Path 'C:\computer-info.txt') {
+    Write-Host 'Computer information created at C:\computer-info.txt';
+  }
+  else {
+    Write-Host 'Error: Computer information failed to generate.';
+  }
+}
+
 function GenerateBatteryReport {
   Write-Host 'Generating battery report...';
   powercfg /batteryreport /output 'C:\battery-report.html' | Out-Null;
@@ -78,21 +90,9 @@ function GetActivationStatus {
   Invoke-RestMethod https://get.activated.win | Invoke-Expression
 }
 
-# Restart and boot to firmware settings
-function BootToFirmware {
-  $Title = 'Boot to Firmware Settings'
-  $Prompt = 'Are you sure you want to restart and boot to firmware settings?
-    ExpressGUI might not show up on the next boot. Make sure you have done everything you need to do before proceeding.'
-  $Choices = '&Yes', '&No'
-
-  $Decision = $Host.UI.PromptForChoice($Title, $Prompt, $Choices, 1)
-  if ($Decision -eq 0) {
-    shutdown /r /fw /t 5
-  }
-}
-
-RunInPwsh(GenerateBatteryReport)
-RunInPwsh(GetEnrollmentStatus)
+Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -Command $GenerateBatteryReport"
+Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -Command $GetEnrollmentStatus"
+Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -Command $GetComputerInfo"
 
 [xml]$XAML = @'
 <Window x:Class="MainWindow"
@@ -103,6 +103,7 @@ RunInPwsh(GetEnrollmentStatus)
         Width="800"
         Height="450"
         WindowStartupLocation="CenterScreen"
+        WindowState="Maximized"
         ResizeMode="NoResize">
     <Grid>
         <Label Content="PowerExpressGUI"
@@ -133,6 +134,12 @@ RunInPwsh(GetEnrollmentStatus)
                   <Button x:Name="GetActivationStatusButton" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10, 35, 0, 0" Content="Check Activation Status" />
                 </Grid>
             </TabItem>
+            <TabItem Header="Enrollment Report">
+                <Grid>
+                  <WebBrowser x:Name="EnrollmentStatusViewport"
+                              Source="C:\computer-info.txt"/>
+                </Grid>
+            </TabItem>
             <TabItem Header="Battery Report">
                 <Grid>
                   <WebBrowser x:Name="BatteryReportViewport"
@@ -156,8 +163,8 @@ $MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader)
 $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $MainWindow.FindName($_.Name) }
 
 $InstallDriverUpdateButton.Add_Click({ InstallPSWindowsUpdate })
-$GenerateBatteryReportButton.Add_Click({ GenerateBatteryReport })
-$GenerateEnrollmentReportButton.Add_Click({ GetEnrollmentStatus })
+# $GenerateBatteryReportButton.Add_Click({ GenerateBatteryReport })
+# $GenerateEnrollmentReportButton.Add_Click({ GetEnrollmentStatus })
 $GetActivationStatusButton.Add_Click({ GetActivationStatus })
 
 $MainWindow.ShowDialog() | Out-Null
