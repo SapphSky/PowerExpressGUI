@@ -114,7 +114,7 @@ GetEnrollmentStatus
                 </LinearGradientBrush>
             </Label.Foreground>
         </Label>
-        <Button x:Name="ReloadButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0, 0, 10, 10" Content="Reload" Tooltip="Testing currently, may not work" />
+        <Button x:Name="ReloadButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0, 0, 10, 10" Content="Reload" />
         <Label Content="PREGUI for short | Version 1.0.0 | Made with PowerShell"
                VerticalAlignment="Bottom"
                FontSize="10"
