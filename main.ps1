@@ -8,18 +8,11 @@ $Title = 'PowerExpressGUI'
 $Author = 'Joel Fargas (github.com/sapphsky)'
 $CurrentVersion = '1.0.0'
 
-function RunInPwsh($Command) {
-  Start-Process powershell -Wait -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -NoExit -NonInteractive -NoLogo -Command $Command"
-}
-
-# Connect to network
 function ConnectToWifi {
   Write-Host 'Connecting to 2ARTech network...';
   netsh wlan connect ssid=$NetworkSSID name='Test' key=$NetworkPassword
-  # exit;
 }
 
-# Clear network settings
 function ResetNetwork {
   ipconfig /release
   ipconfig /flushdns
@@ -27,14 +20,12 @@ function ResetNetwork {
   netsh int ip reset
   netsh winsock reset
   Write-Host 'Network stack reset.';
-  # exit;
 }
 
-# Install PSWindowsUpdate module and check for driver updates
 function InstallPSWindowsUpdate {
   function Perform {
     Write-Host 'Checking for driver updates...';
-    Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose;
+    Start-Process powershell -Wait -Verb RunAs -ArgumentList '-NoLogo -Command "Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose"';
     Write-Host 'Driver updates completed.';
   }
 
@@ -43,8 +34,8 @@ function InstallPSWindowsUpdate {
   }
   else {
     Write-Host 'Installing the PSWindowsUpdate module...';
-    Get-PackageProvider -Name Nuget | Install-PackageProvider -Force -Scope CurrentUser;
-    Install-Module -Name 'PSWindowsUpdate' -Force -Scope CurrentUser;
+    Get-PackageProvider -Name Nuget | Install-PackageProvider -Force;
+    Install-Module -Name 'PSWindowsUpdate' -Force;
     Start-Sleep -Seconds 1;
 
     if (Get-Module -Name 'PSWindowsUpdate' -ListAvailable) {
@@ -64,35 +55,27 @@ function GenerateBatteryReport {
 
   if (Test-Path -Path 'C:\battery-report.html') {
     Write-Host 'Battery report created at C:\battery-report.html';
-    # exit;
   }
   else {
     Write-Host 'Error: Battery report failed to generate.';
-    # exit;
   }
 }
 
-# Check if the device is enrolled in MDM
 function GetEnrollmentStatus {
   Write-Host 'Checking enrollment status...';
   dsregcmd /status | Out-File -FilePath 'C:\enrollment-status.txt';
   Start-Sleep -Seconds 1;
 
-  # $EnrollmentStatus = Get-WmiObject -Class Win32_ComputerSystem | Select-Object -ExpandProperty PartOfDomain;
-  # "PartOfDomain: $EnrollmentStatus" | Out-File -Append -FilePath 'C:\enrollment-status.txt'; 
-
   if (Test-Path -Path 'C:\enrollment-status.txt') {
     Write-Host 'Enrollment report created at C:\enrollment-status.txt';
-    # exit;
   }
   else {
     Write-Host 'Error: Enrollment report failed to generate.';
-    # exit;
   }
 }
 
 function GetActivationStatus {
-  irm https://get.activated.win | Invoke-Expression
+  Invoke-RestMethod https://get.activated.win | Invoke-Expression
 }
 
 # Restart and boot to firmware settings
@@ -137,11 +120,6 @@ RunInPwsh(GetEnrollmentStatus)
                 </LinearGradientBrush>
             </Label.Foreground>
         </Label>
-        <CheckBox Content="Automatically perform all steps"
-                  HorizontalAlignment="Right"
-                  Margin="0,0,10,10"
-                  VerticalAlignment="Bottom"
-                  IsChecked="False"/>
         <Label Content="Version 1.0.0 | Made with PowerShell"
                VerticalAlignment="Bottom"
                FontSize="10"
@@ -151,10 +129,8 @@ RunInPwsh(GetEnrollmentStatus)
                     Margin="10,10,10,30">
             <TabItem Header="Home">
                 <Grid>
-                  <Button x:Name="InstallDriverUpdateButton" Margin="10, 20, 10, 0" Height="20" Content="Install Driver Updates" />
-                  <Button x:Name="GenerateBatteryReportButton" Margin="10, 40, 10, 0" Height="20" Content="Generate Battery Report" />
-                  <Button x:Name="GenerateEnrollmentReportButton" Margin="10, 60, 10, 0" Height="20" Content="Generate Enrollment Report" />
-                  <Button x:Name="GetActivationStatusButton" Margin="10, 80, 10, 0" Height="20" Content="Check Activation Status" />
+                  <Button x:Name="InstallDriverUpdateButton" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10, 10, 0, 0" Content="Install Driver Updates" />
+                  <Button x:Name="GetActivationStatusButton" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10, 35, 0, 0" Content="Check Activation Status" />
                 </Grid>
             </TabItem>
             <TabItem Header="Battery Report">
