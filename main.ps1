@@ -7,6 +7,8 @@ $NetworkPassword = 'qwertyui'
 $Title = 'PowerExpressGUI'
 $Author = 'Joel Fargas (github.com/sapphsky)'
 $CurrentVersion = '1.0.0'
+$OSVersion = Get-ComputerInfo -Property 'WindowsProductName'
+Out-Host $OSVersion
 
 function ConnectToWifi {
   Write-Host 'Connecting to 2ARTech network...';
@@ -90,9 +92,9 @@ function GetActivationStatus {
   Invoke-RestMethod https://get.activated.win | Invoke-Expression
 }
 
-Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -Command $GenerateBatteryReport"
-Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -Command $GetEnrollmentStatus"
-Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -Command $GetComputerInfo"
+Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command $GetComputerInfo"
+Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command $GenerateBatteryReport"
+Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command $GetEnrollmentStatus"
 
 [xml]$XAML = @'
 <Window x:Class="MainWindow"
@@ -134,9 +136,9 @@ Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -Command $GetC
                   <Button x:Name="GetActivationStatusButton" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10, 35, 0, 0" Content="Check Activation Status" />
                 </Grid>
             </TabItem>
-            <TabItem Header="Enrollment Report">
+            <TabItem Header="Computer Info">
                 <Grid>
-                  <WebBrowser x:Name="EnrollmentStatusViewport"
+                  <WebBrowser x:Name="ComputerInfoViewport"
                               Source="C:\computer-info.txt"/>
                 </Grid>
             </TabItem>
