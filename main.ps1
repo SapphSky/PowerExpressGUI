@@ -43,7 +43,8 @@ function InstallPSWindowsUpdate {
   }
   else {
     Write-Host 'Installing the PSWindowsUpdate module...';
-    Install-Module -Name 'PSWindowsUpdate' -Force;
+    Get-PackageProvider -Name Nuget | Install-PackageProvider -Force -Scope CurrentUser;
+    Install-Module -Name 'PSWindowsUpdate' -Force -Scope CurrentUser;
     Start-Sleep -Seconds 1;
 
     if (Get-Module -Name 'PSWindowsUpdate' -ListAvailable) {
