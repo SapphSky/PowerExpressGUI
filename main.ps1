@@ -116,9 +116,7 @@ RunInPwsh(GetEnrollmentStatus)
         Title="PowerExpressGUI"
         Height="450"
         Width="800"
-        Topmost="True"
         WindowStartupLocation="CenterScreen"
-        WindowStyle="None"
         WindowState="Maximized"
         ResizeMode="NoResize">
     <Grid>
