@@ -92,7 +92,7 @@ GetEnrollmentStatus
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:WpfApp2"
-        Title="PoweRExpressGUI"
+        Title="PowerExpressGUI"
         Width="800"
         Height="450"
         WindowStartupLocation="CenterScreen"
@@ -103,7 +103,7 @@ GetEnrollmentStatus
                HorizontalAlignment="Center"
                Margin="0,0,0,0"
                VerticalAlignment="Top"
-               FontSize="36"
+               FontSize="32"
                FontWeight="Bold">
             <Label.Foreground>
                 <LinearGradientBrush EndPoint="0.5,1"
@@ -115,7 +115,7 @@ GetEnrollmentStatus
             </Label.Foreground>
         </Label>
         <Button x:Name="ReloadButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0, 0, 10, 10" Content="Reload" />
-        <Label Content="PREGUI for short | Version 1.0.0 | Made with PowerShell"
+        <Label Content="Version 1.0.0 | Made with PowerShell"
                VerticalAlignment="Bottom"
                FontSize="10"
                HorizontalAlignment="Left"/>
@@ -158,6 +158,9 @@ $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) 
 
 $InstallDriverUpdateButton.Add_Click({ InstallPSWindowsUpdate })
 $GetActivationStatusButton.Add_Click({ GetActivationStatus })
-$ReloadButton.Add_Click({ Invoke-RestMethod https://github.com/SapphSky/PowerExpressGUI/raw/main/main.ps1 | Invoke-Expression; $MainWindow.Close() })
+$ReloadButton.Add_Click({
+    Start-Job -ScriptBlock { Start-Process powershell -Wait -Verb RunAs -ArgumentList '-NoLogo -NoExit -Command "irm https://github.com/SapphSky/PowerExpressGUI/raw/main/main.ps1 | iex"' };
+    $MainWindow.Close();
+  })
 
 $MainWindow.ShowDialog() | Out-Null
