@@ -101,7 +101,7 @@ GetEnrollmentStatus
     <Grid>
         <Label Content="PowerExpressGUI"
                HorizontalAlignment="Center"
-               Margin="0,10,0,0"
+               Margin="0,0,0,0"
                VerticalAlignment="Top"
                FontSize="36"
                FontWeight="Bold">
