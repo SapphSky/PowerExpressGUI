@@ -158,6 +158,6 @@ $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) 
 
 $InstallDriverUpdateButton.Add_Click({ InstallPSWindowsUpdate })
 $GetActivationStatusButton.Add_Click({ GetActivationStatus })
-$ReloadButton.Add_Click({ Invoke-RestMethod https://github.com/SapphSky/PowerExpress/raw/main/main.ps1 | Invoke-Expression; $MainWindow.Close() })
+$ReloadButton.Add_Click({ Invoke-RestMethod https://github.com/SapphSky/PowerExpressGUI/raw/main/main.ps1 | Invoke-Expression; $MainWindow.Close() })
 
 $MainWindow.ShowDialog() | Out-Null
