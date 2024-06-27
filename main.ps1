@@ -8,7 +8,7 @@ $Title = 'PowerExpressGUI'
 $Author = 'Joel Fargas (github.com/sapphsky)'
 $CurrentVersion = '1.0.0'
 $OSVersion = Get-ComputerInfo -Property 'WindowsProductName'
-Out-Host $OSVersion
+Write-Host $OSVersion
 
 function ConnectToWifi {
   Write-Host 'Connecting to 2ARTech network...';
@@ -92,9 +92,7 @@ function GetActivationStatus {
   Invoke-RestMethod https://get.activated.win | Invoke-Expression
 }
 
-Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command $GetComputerInfo"
-Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command $GenerateBatteryReport"
-Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command $GetEnrollmentStatus"
+Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command {$GetComputerInfo; $GenerateBatteryReport; $GetEnrollmentStatus";
 
 [xml]$XAML = @'
 <Window x:Class="MainWindow"
