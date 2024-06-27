@@ -117,10 +117,9 @@ RunInPwsh(GetEnrollmentStatus)
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:local="clr-namespace:WpfApp2"
         Title="PowerExpressGUI"
-        Height="450"
         Width="800"
+        Height="450"
         WindowStartupLocation="CenterScreen"
-        WindowState="Maximized"
         ResizeMode="NoResize">
     <Grid>
         <Label Content="PowerExpressGUI"
@@ -181,9 +180,9 @@ $MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader)
 $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $MainWindow.FindName($_.Name) }
 
 # XAML objects
-$InstallDriverUpdateButton.Add_Click({ RunInPwsh(InstallPSWindowsUpdate) })
-$GenerateBatteryReportButton.Add_Click({ RunInPwsh(GenerateBatteryReport) })
-$GenerateEnrollmentReportButton.Add_Click({ RunInPwsh(GetEnrollmentStatus) })
-$GetActivationStatusButton.Add_Click({ RunInPwsh(GetActivationStatus) })
+$InstallDriverUpdateButton.Add_Click({ InstallPSWindowsUpdate })
+$GenerateBatteryReportButton.Add_Click({ GenerateBatteryReport })
+$GenerateEnrollmentReportButton.Add_Click({ GetEnrollmentStatus })
+$GetActivationStatusButton.Add_Click({ GetActivationStatus })
 
 $MainWindow.ShowDialog() | Out-Null
