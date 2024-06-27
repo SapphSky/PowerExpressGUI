@@ -58,7 +58,7 @@ function InstallPSWindowsUpdate {
 # Generate battery report
 function GenerateBatteryReport {
   Write-Host 'Generating battery report...';
-  powercfg /batteryreport /output 'C:\battery-report.html';
+  powercfg /batteryreport /output 'C:\battery-report.html' | Out-Null;
   Start-Sleep -Seconds 1;
 
   if (Test-Path -Path 'C:\battery-report.html') {
