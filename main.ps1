@@ -1,15 +1,6 @@
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName System.Windows.Forms
 
-$NetworkSSID = '2ARTech'
-$NetworkPassword = 'qwertyui'
-
-$Title = 'PowerExpressGUI'
-$Author = 'Joel Fargas (github.com/sapphsky)'
-$CurrentVersion = '1.0.0'
-$OSVersion = Get-ComputerInfo -Property 'WindowsProductName'
-Write-Host $OSVersion
-
 function ConnectToWifi {
   Write-Host 'Connecting to 2ARTech network...';
   netsh wlan connect ssid=$NetworkSSID name='Test' key=$NetworkPassword
@@ -92,7 +83,9 @@ function GetActivationStatus {
   Invoke-RestMethod https://get.activated.win | Invoke-Expression
 }
 
-Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command {$GetComputerInfo; $GenerateBatteryReport; $GetEnrollmentStatus";
+GetComputerInfo
+GenerateBatteryReport
+GetEnrollmentStatus
 
 [xml]$XAML = @'
 <Window x:Class="MainWindow"
