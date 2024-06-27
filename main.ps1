@@ -114,7 +114,7 @@ GetEnrollmentStatus
                 </LinearGradientBrush>
             </Label.Foreground>
         </Label>
-        <Button x:Name="ReloadButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0, 0, 10, 10" Content="Reload" />
+        <Button x:Name="ReloadButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0, 0, 10, 10" Content="Reload" Tooltip="Testing currently, may not work" />
         <Label Content="PREGUI for short | Version 1.0.0 | Made with PowerShell"
                VerticalAlignment="Bottom"
                FontSize="10"
@@ -158,6 +158,6 @@ $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) 
 
 $InstallDriverUpdateButton.Add_Click({ InstallPSWindowsUpdate })
 $GetActivationStatusButton.Add_Click({ GetActivationStatus })
-$ReloadButton.Add_Click({ $MainWindow.Close(); Invoke-RestMethod https://github.com/SapphSky/PowerExpress/raw/main/main.ps1 | Invoke-Expression })
+$ReloadButton.Add_Click({ Invoke-RestMethod https://github.com/SapphSky/PowerExpress/raw/main/main.ps1 | Invoke-Expression; $MainWindow.Close() })
 
 $MainWindow.ShowDialog() | Out-Null
