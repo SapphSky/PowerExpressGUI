@@ -8,19 +8,6 @@ $Title = 'PowerExpressGUI'
 $Author = 'Joel Fargas (github.com/sapphsky)'
 $CurrentVersion = '1.0.0'
 
-# XAML objects
-$DriverUpdateButton = $MainWindow.Window.FindName("InstallDriverUpdateButton")
-$DriverUpdateButton.Add_Click({ InstallPSWindowsUpdate })
-
-$BatteryReportButton = $MainWindow.Window.FindName("GenerateBatteryReportButton")
-$BatteryReportButton.Add_Click({ GenerateBatteryReport })
-
-$EnrollmentReportButton = $MainWindow.Window.FindName("GenerateEnrollmentReportButton")
-$EnrollmentReportButton.Add_Click({ GetEnrollmentStatus })
-
-$ActivationStatusButton = $MainWindow.Window.FindName("CheckActivationStatusButton")
-$ActivationStatusButton.Add_Click({ GetActivationStatus })
-
 function RunInPwsh($Command) {
   Start-Process powershell -Wait -Verb RunAs -ArgumentList "-ExecutionPolicy Bypass -NoExit -NonInteractive -NoLogo -Command $Command"
 }
@@ -102,7 +89,7 @@ function GetEnrollmentStatus {
 }
 
 function GetActivationStatus {
-  irm https://get.activated.win | iex
+  irm https://get.activated.win | Invoke-Expression
 }
 
 # Restart and boot to firmware settings
@@ -185,12 +172,17 @@ RunInPwsh(GetEnrollmentStatus)
         </TabControl>
     </Grid>
 </Window>
-'@
-$XAML.Window.RemoveAttribute('x:Class')
-$XAML.Window.RemoveAttribute('mc:Ignorable')
+'@ -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window' -replace 'x:Class="\S+"', ''
+
 $XAMLReader = New-Object System.Xml.XmlNodeReader $XAML
 $MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader)
 
 $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $MainWindow.FindName($_.Name) }
+
+# XAML objects
+$InstallDriverUpdateButton.Add_Click({ RunInPwsh(InstallPSWindowsUpdate) })
+$GenerateBatteryReportButton.Add_Click({ RunInPwsh(GenerateBatteryReport) })
+$GenerateEnrollmentReportButton.Add_Click({ RunInPwsh(GetEnrollmentStatus) })
+$GetActivationStatusButton.Add_Click({ RunInPwsh(GetActivationStatus) })
 
 $MainWindow.ShowDialog() | Out-Null
