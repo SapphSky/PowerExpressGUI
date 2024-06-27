@@ -18,7 +18,7 @@ function ResetNetwork {
 function InstallPSWindowsUpdate {
   function Perform {
     Write-Host 'Checking for driver updates...';
-    Start-Process powershell -Wait -Verb RunAs -ArgumentList '-NoLogo -Command "Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose"';
+    Start-Process powershell -Wait -Verb RunAs -ArgumentList '-NoLogo -NoExit -Command "Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose"';
     Write-Host 'Driver updates completed.';
   }
 
