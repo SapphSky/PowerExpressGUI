@@ -44,7 +44,7 @@ function InstallPSWindowsUpdate {
   else {
     Write-Host 'Installing the PSWindowsUpdate module...';
     Install-Module -Name 'PSWindowsUpdate' -Force;
-    Start-Sleep -Seconds 2;
+    Start-Sleep -Seconds 1;
 
     if (Get-Module -Name 'PSWindowsUpdate' -ListAvailable) {
       Perform;
@@ -59,6 +59,7 @@ function InstallPSWindowsUpdate {
 function GenerateBatteryReport {
   Write-Host 'Generating battery report...';
   powercfg /batteryreport /output 'C:\battery-report.html';
+  Start-Sleep -Seconds 1;
 
   if (Test-Path -Path 'C:\battery-report.html') {
     Write-Host 'Battery report created at C:\battery-report.html';
@@ -74,6 +75,7 @@ function GenerateBatteryReport {
 function GetEnrollmentStatus {
   Write-Host 'Checking enrollment status...';
   dsregcmd /status | Out-File -FilePath 'C:\enrollment-status.txt';
+  Start-Sleep -Seconds 1;
 
   # $EnrollmentStatus = Get-WmiObject -Class Win32_ComputerSystem | Select-Object -ExpandProperty PartOfDomain;
   # "PartOfDomain: $EnrollmentStatus" | Out-File -Append -FilePath 'C:\enrollment-status.txt'; 
