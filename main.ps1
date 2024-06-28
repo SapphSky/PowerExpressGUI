@@ -18,7 +18,7 @@ function ResetNetwork {
 function InstallPSWindowsUpdate {
   function Perform {
     Write-Host 'Checking for driver updates...';
-    Start-Process powershell -Wait -Verb RunAs -ArgumentList '-NoLogo -NoExit -Command "Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose"';
+    Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose;
     Write-Host 'Driver updates completed.';
   }
 
@@ -83,9 +83,10 @@ function GetActivationStatus {
   Invoke-RestMethod https://get.activated.win | Invoke-Expression
 }
 
-GetComputerInfo
-GenerateBatteryReport
-GetEnrollmentStatus
+Start-Job -ScriptBlock { GetComputerInfo }
+Start-Job -ScriptBlock { GenerateBatteryReport }
+Start-Job -ScriptBlock { GetEnrollmentStatus } 
+Get-Job | Wait-Job
 
 [xml]$XAML = @'
 <Window x:Class="MainWindow"
@@ -156,10 +157,13 @@ $MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader)
 
 $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $MainWindow.FindName($_.Name) }
 
-$InstallDriverUpdateButton.Add_Click({ InstallPSWindowsUpdate })
+$InstallDriverUpdateButton.Add_Click({
+    Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command $InstallPSWindowsUpdate";
+  })
 $GetActivationStatusButton.Add_Click({ GetActivationStatus })
 $ReloadButton.Add_Click({
     Start-Job -ScriptBlock { Start-Process powershell -Wait -Verb RunAs -ArgumentList '-NoLogo -NoExit -Command "irm https://github.com/SapphSky/PowerExpressGUI/raw/main/main.ps1 | iex"' };
+    Get-Job | Wait-Job;
     $MainWindow.Close();
   })
 
