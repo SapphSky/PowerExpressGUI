@@ -83,10 +83,9 @@ function GetActivationStatus {
   Invoke-RestMethod https://get.activated.win | Invoke-Expression
 }
 
-Start-Job -ScriptBlock { GetComputerInfo }
-Start-Job -ScriptBlock { GenerateBatteryReport }
-Start-Job -ScriptBlock { GetEnrollmentStatus } 
-Get-Job | Wait-Job
+GetComputerInfo
+GenerateBatteryReport
+GetEnrollmentStatus
 
 [xml]$XAML = @'
 <Window x:Class="MainWindow"
@@ -158,7 +157,7 @@ $MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader)
 $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $MainWindow.FindName($_.Name) }
 
 $InstallDriverUpdateButton.Add_Click({
-    Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command $InstallPSWindowsUpdate";
+    Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command { $InstallPSWindowsUpdate }";
   })
 $GetActivationStatusButton.Add_Click({ GetActivationStatus })
 $ReloadButton.Add_Click({
