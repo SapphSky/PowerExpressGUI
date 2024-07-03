@@ -17,50 +17,72 @@ function ResetNetwork {
 
 $InstallPSWindowsUpdate = {
   $InstallModule = {
-    if (Get-Module -Name 'PSWindowsUpdate' -ListAvailable) {
+    function GetModule {
+      $Uri = 'https://psg-prod-eastus.azureedge.net/packages/pswindowsupdate.2.2.0.3.nupkg';
+      $OutFile = 'C:\' + $(Split-Path -Path $Uri -Leaf);
+      $DestinationPath = """$env:ProgramFiles\PowerShell\Modules\pswindowsupdate""";
+
+      if (Test-Path -Path """$DestinationPath\PSWindowsUpdate.dll""") {
+        CheckForUpdates;
+      }
+      else {
+        Write-Host 'Downloading PSWindowsUpdate module...';
+        Invoke-RestMethod -Uri $Uri -OutFile $OutFile -TimeoutSec 30;
+        Expand-Archive -LiteralPath $OutFile -DestinationPath $DestinationPath;
+  
+        if (Test-Path -Path """$DestinationPath\PSWindowsUpdate.dll""") {
+          Write-Host 'Extraction Successful.';
+          CheckForUpdates;
+        }
+      }
+    }
+
+    function CheckForUpdates {
       Write-Host 'Checking for driver updates...';
       Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose;
       Write-Host 'Driver updates completed.';
     }
+    if (Get-Module -Name 'PSWindowsUpdate' -ListAvailable) {
+      CheckForUpdates;
+    }
     else {
-      Write-Host 'Installing the PSWindowsUpdate module...';
-      Get-PackageProvider -Name Nuget | Install-PackageProvider -Force;
-      Install-Module -Name 'PSWindowsUpdate' -Force;
-      Start-Sleep -Seconds 1;
+      # Write-Host 'Installing the PSWindowsUpdate module...';
+      # Get-PackageProvider -Name Nuget | Install-PackageProvider -Force;
+      # Install-Module -Name 'PSWindowsUpdate' -Force;
+      # Start-Sleep -Seconds 1;
+      GetModule;
 
-      if (Get-Module -Name 'PSWindowsUpdate' -ListAvailable) {
-        Write-Host 'Checking for driver updates...';
-        Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose;
-        Write-Host 'Driver updates completed.';
-      }
-      else {
-        Write-Host 'Unable to find PSWindowsUpdate module. Aborting.';
-      }
+      # if (Get-Module -Name 'PSWindowsUpdate' -ListAvailable) {
+      #   CheckForUpdates;
+      # }
+      # else {
+      #   Write-Host 'Unable to find PSWindowsUpdate module. Aborting.';
+      # }
     }
   }
 
   function GetPowerShell7 {
     $Uri = 'https://github.com/PowerShell/PowerShell/releases/download/v7.4.3/PowerShell-7.4.3-win-x64.zip';
-    $PSFileSha = '64B4A0636A2AF4854B90593AC78645BB59F86B4D094F75B41A5A617AFD2478D3';
     $OutFile = 'C:\' + $(Split-Path -Path $Uri -Leaf);
     $DestinationPath = """$env:ProgramFiles\PowerShell\7""";
 
-    if (Test-Path -Path """$DestinationPath\pwsh.exe""") {
+    function Launch {
       Start-Process """$DestinationPath\pwsh.exe""" -Wait -Verb RunAs -ArgumentList """-NoLogo -NoExit -Command $InstallModule""";
+    }
+
+    if (Test-Path -Path """$DestinationPath\pwsh.exe""") {
+      Launch;
     }
     else {
       [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
       Write-Host 'Downloading PowerShell 7...';
   
       Invoke-RestMethod -Uri $Uri -OutFile $OutFile -TimeoutSec 30;
-      if (Test-Path -Path $OutFile) {
-        Write-Host """Checksum $(Get-FileHash $OutFile -Algorithm SHA256 -eq $PSFileSha ? 'Passed' : 'Failed')!""";
-      }
       Expand-Archive -LiteralPath $OutFile -DestinationPath $DestinationPath;
   
       if (Test-Path -Path $DestinationPath) {
         Write-Host 'Extraction Successful.';
-        Start-Process """$DestinationPath\pwsh.exe""" -Wait -Verb RunAs -ArgumentList """-NoLogo -NoExit -Command $InstallModule""";
+        Launch;
       }
     }
   }
