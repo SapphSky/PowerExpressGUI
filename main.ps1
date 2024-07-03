@@ -188,7 +188,8 @@ $MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader);
 $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $MainWindow.FindName($_.Name) }
 
 $InstallDriverUpdateButton.Add_Click({
-    Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit $InstallPSWindowsUpdate";
+    Invoke-Command -ScriptBlock { InstallPSWindowsUpdate } -RunAsAdministrator;
+    # Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit $InstallPSWindowsUpdate";
   })
 $GetActivationStatusButton.Add_Click({ GetActivationStatus })
 $ReloadButton.Add_Click({
