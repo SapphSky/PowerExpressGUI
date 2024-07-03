@@ -60,9 +60,9 @@ function GetActivationStatus {
 
 function CreateScheduledDriverUpdateTask {
   $action = New-ScheduledTaskAction -Execute 'C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe' -Argument 'Start-Process powershell -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command {irm https://github.com/SapphSky/PowerExpressGUI/raw/main/driver-update.ps1 | iex}"';
-  $trigger = New-ScheduledTaskTrigger -AtStartup -Once;
+  $trigger = New-ScheduledTaskTrigger -AtLogon -Once;
   $settings = New-ScheduledTaskSettingsSet -DeleteExpiredTaskAfter (New-TimeSpan -Days 1) -ExecutionTimeLimit (New-TimeSpan -Days 1);
-  Register-ScheduledTask -TaskName 'Update Drivers' -Trigger $trigger -Action $action -Settings $settings -Force -RunLevel Highest;
+  Register-ScheduledTask -Trigger [$trigger] -Action $action -Settings $settings -Force -RunLevel Highest;
 }
 
 GetComputerInfo;
