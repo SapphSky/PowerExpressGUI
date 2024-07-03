@@ -30,6 +30,8 @@ $InstallPSWindowsUpdate = {
     CheckForUpdates;
   }
   else {
+    Install-PackageProvider -Name NuGet -Force
+    Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
     Write-Host 'Downloading PSWindowsUpdate module...';
     Invoke-RestMethod -Uri $Uri -OutFile $OutFile -TimeoutSec 30;
     Expand-Archive -LiteralPath $OutFile -DestinationPath $DestinationPath;
