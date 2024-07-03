@@ -15,7 +15,7 @@ function ResetNetwork {
   Write-Host 'Network stack reset.';
 }
 
-function InstallPSWindowsUpdate {
+$InstallPSWindowsUpdate = {
   function RunModule {
     Write-Host 'Checking for driver updates...';
     Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose;
@@ -27,7 +27,6 @@ function InstallPSWindowsUpdate {
       Perform;
     }
     else {
-      Register-PSRepository 
       Write-Host 'Installing the PSWindowsUpdate module...';
       Get-PackageProvider -Name Nuget | Install-PackageProvider -Force;
       Install-Module -Name 'PSWindowsUpdate' -Force;
@@ -45,11 +44,11 @@ function InstallPSWindowsUpdate {
   function GetPowerShell7 {
     $Uri = 'https://github.com/PowerShell/PowerShell/releases/download/v7.4.3/PowerShell-7.4.3-win-x64.zip';
     $PSFileSha = '64B4A0636A2AF4854B90593AC78645BB59F86B4D094F75B41A5A617AFD2478D3';
-    $OutFile = "$env:TEMP" + $(Split-Path -Path $Url -Leaf);
-    $DestinationPath = "$env:ProgramFiles\PowerShell\7";
+    $OutFile = """$env:TEMP""" + $(Split-Path -Path $Url -Leaf);
+    $DestinationPath = """$env:ProgramFiles\PowerShell\7""";
 
     if (Test-Path -Path $DestinationPath) {
-      Start-Process "$DestinationPath\pwsh.exe" -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command $InstallModule";
+      Start-Process """$DestinationPath\pwsh.exe""" -Wait -Verb RunAs -ArgumentList """-NoLogo -NoExit -Command $InstallModule""";
     }
     else {
       [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
@@ -57,13 +56,13 @@ function InstallPSWindowsUpdate {
   
       Invoke-RestMethod -Uri $Uri -OutFile $OutFile -TimeoutSec 30;
       if (Test-Path -Path $OutFile) {
-        Write-Host "Checksum $(Get-FileHash $OutFile -Algorithm SHA256 -eq $PSFileSha ? 'Passed' : 'Failed')!";
+        Write-Host """Checksum $(Get-FileHash $OutFile -Algorithm SHA256 -eq $PSFileSha ? 'Passed' : 'Failed')!""";
       }
       Expand-Archive -LiteralPath $OutFile -DestinationPath $DestinationPath;
   
       if (Test-Path -Path $DestinationPath) {
         Write-Host 'Extraction Successful.';
-        Start-Process "$DestinationPath\pwsh.exe" -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command $InstallModule";
+        Start-Process """$DestinationPath\pwsh.exe""" -Wait -Verb RunAs -ArgumentList """-NoLogo -NoExit -Command $InstallModule""";
       }
     }
   }
@@ -188,8 +187,7 @@ $MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader);
 $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $MainWindow.FindName($_.Name) }
 
 $InstallDriverUpdateButton.Add_Click({
-    Invoke-Command -ScriptBlock { InstallPSWindowsUpdate } -RunAsAdministrator;
-    # Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit $InstallPSWindowsUpdate";
+    Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit $InstallPSWindowsUpdate";
   })
 $GetActivationStatusButton.Add_Click({ GetActivationStatus })
 $ReloadButton.Add_Click({
