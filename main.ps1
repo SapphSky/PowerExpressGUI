@@ -22,7 +22,7 @@ $InstallPSWindowsUpdate = {
 
   function CheckForUpdates {
     Write-Host 'Checking for driver updates...';
-    Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose;
+    Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose -AutoReboot;
     Write-Host 'Driver updates completed.';
   }
 
@@ -120,6 +120,12 @@ function GetActivationStatus {
   Invoke-RestMethod https://get.activated.win | Invoke-Expression;
 }
 
+function CreateScheduledDriverUpdateTask {
+  $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoLogo -NoExit -Command $InstallPSWindowsUpdate";
+  $trigger = New-ScheduledTaskTrigger -AtStartup -Once;
+  Register-ScheduledTask -TaskName "Update Drivers" -Trigger $trigger -Action $action -Force -RunLevel Highest -Settings ( New-ScheduledTaskSettingsSet -DeleteExpiredTaskAfter (New-TimeSpan -Days 1) );
+}
+
 GetComputerInfo;
 GenerateBatteryReport;
 GetEnrollmentStatus;
@@ -194,7 +200,10 @@ $MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader);
 $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $MainWindow.FindName($_.Name) }
 
 $InstallDriverUpdateButton.Add_Click({
-    Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command $InstallPSWindowsUpdate";
+    # Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command $InstallPSWindowsUpdate";
+    CreateScheduledDriverUpdateTask;
+    $InstallDriverUpdateButton.Disabled = $true;
+    $InstallDeiverUpdateButton.Label = 'Task created. Driver updates will run on next boot.';
   })
 $GetActivationStatusButton.Add_Click({ GetActivationStatus })
 $ReloadButton.Add_Click({
