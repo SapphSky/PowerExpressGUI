@@ -17,7 +17,7 @@ function ResetNetwork {
 
 $InstallPSWindowsUpdate = {
   $Uri = 'https://psg-prod-eastus.azureedge.net/packages/pswindowsupdate.2.2.0.3.nupkg';
-  $OutFile = 'C:\' + $(Split-Path -Path $Uri -Leaf);
+  $OutFile = 'C:\' + $(Split-Path -Path $Uri -Leaf) + '.zip';
   $DestinationPath = 'C:\Program Files\PowerShell\Modules\pswindowsupdate';
 
   function CheckForUpdates {
@@ -26,7 +26,7 @@ $InstallPSWindowsUpdate = {
     Write-Host 'Driver updates completed.';
   }
 
-  if (Import-Module -Name PSWindowsUpdate -Force) {
+  if (Import-Module -Name PSWindowsUpdate -Force | Out-Null) {
     CheckForUpdates;
   }
   else {
@@ -40,8 +40,9 @@ $InstallPSWindowsUpdate = {
     Remove-Item -Path """$DestinationPath\package""" -Recurse;
     Remove-Item -Path """$DestinationPath\[Content-Types].xml""";
     Remove-Item -Path """$DestinationPath\*.nuspec""";
+    Start-Sleep -Seconds 1;
 
-    if (Test-Path -Path """$DestinationPath\PSWindowsUpdate.dll""") {
+    if (Import-Module -Name PSWindowsUpdate -Force | Out-Null) {
       Write-Host 'Extraction Successful.';
       CheckForUpdates;
     }
