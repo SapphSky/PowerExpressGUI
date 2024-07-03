@@ -15,68 +15,6 @@ function ResetNetwork {
   Write-Host 'Network stack reset.';
 }
 
-$InstallPSWindowsUpdate = {
-  $Uri = 'https://psg-prod-eastus.azureedge.net/packages/pswindowsupdate.2.2.0.3.nupkg';
-  $OutFile = 'C:\' + $(Split-Path -Path $Uri -Leaf) + '.zip';
-  $DestinationPath = 'C:\Program Files\WindowsPowerShell\Modules\pswindowsupdate';
-
-  function CheckForUpdates {
-    Write-Host 'Checking for driver updates...';
-    Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose -AutoReboot;
-    Write-Host 'Driver updates completed.';
-  }
-
-  if (Import-Module -Name $DestinationPath -Force) {
-    CheckForUpdates;
-  }
-  else {
-    Install-PackageProvider -Name NuGet -Force
-    Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted
-    Write-Host 'Downloading PSWindowsUpdate module...';
-    Invoke-RestMethod -Uri $Uri -OutFile $OutFile -TimeoutSec 30;
-    Expand-Archive -LiteralPath $OutFile -DestinationPath $DestinationPath;
-
-    Write-Host 'Cleaning up files...';
-    Remove-Item $OutFile
-    Remove-Item -Path """$DestinationPath\_rels""" -Recurse;
-    Remove-Item -Path """$DestinationPath\package""" -Recurse;
-    Remove-Item -Path """$DestinationPath\[Content-Types].xml""";
-    Remove-Item -Path """$DestinationPath\*.nuspec""";
-    Start-Sleep -Seconds 1;
-
-    if (Import-Module -Name $DestinationPath -Force) {
-      Write-Host 'Extraction Successful.';
-      CheckForUpdates;
-    }
-  }
-
-  # function GetPowerShell7 {
-  #   $Uri = 'https://github.com/PowerShell/PowerShell/releases/download/v7.4.3/PowerShell-7.4.3-win-x64.zip';
-  #   $OutFile = 'C:\' + $(Split-Path -Path $Uri -Leaf);
-  #   $DestinationPath = """$env:ProgramFiles\PowerShell\7""";
-
-  #   function Launch {
-  #     Start-Process """$DestinationPath\pwsh.exe""" -Wait -Verb RunAs -ArgumentList """-NoLogo -NoExit -Command $InstallModule""";
-  #   }
-
-  #   if (Test-Path -Path """$DestinationPath\pwsh.exe""") {
-  #     Launch;
-  #   }
-  #   else {
-  #     [Net.ServicePointManager]::SecurityProtocol = [Net.SecurityProtocolType]::Tls12;
-  #     Write-Host 'Downloading PowerShell 7...';
-  
-  #     Invoke-RestMethod -Uri $Uri -OutFile $OutFile -TimeoutSec 30;
-  #     Expand-Archive -LiteralPath $OutFile -DestinationPath $DestinationPath;
-  
-  #     if (Test-Path -Path $DestinationPath) {
-  #       Write-Host 'Extraction Successful.';
-  #       Launch;
-  #     }
-  #   }
-  # }
-}
-
 function GetComputerInfo {
   Write-Host 'Getting Computer Info...';
   Get-ComputerInfo | Out-File -FilePath 'C:\computer-info.txt';
@@ -121,9 +59,10 @@ function GetActivationStatus {
 }
 
 function CreateScheduledDriverUpdateTask {
-  $action = New-ScheduledTaskAction -Execute "powershell.exe" -Argument "-NoLogo -NoExit -Command $InstallPSWindowsUpdate";
+  $action = New-ScheduledTaskAction -Execute 'powershell.exe' '-NoLogo -NoExit -Command "irm https://github.com/SapphSky/PowerExpressGUI/raw/main/driver-update.ps1 | iex"';
   $trigger = New-ScheduledTaskTrigger -AtStartup -Once;
-  Register-ScheduledTask -TaskName "Update Drivers" -Trigger $trigger -Action $action -Force -RunLevel Highest -Settings ( New-ScheduledTaskSettingsSet -DeleteExpiredTaskAfter (New-TimeSpan -Days 1) );
+  $settings = New-ScheduledTaskSettingsSet -DeleteExpiredTaskAfter (New-TimeSpan -Days 1) -ExecutionTimeLimit (New-TimeSpan -Days 1);
+  Register-ScheduledTask -TaskName 'Update Drivers' -Trigger $trigger -Action $action -Settings $settings -Force -RunLevel Highest;
 }
 
 GetComputerInfo;
@@ -200,10 +139,9 @@ $MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader);
 $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $MainWindow.FindName($_.Name) }
 
 $InstallDriverUpdateButton.Add_Click({
-    # Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command $InstallPSWindowsUpdate";
     CreateScheduledDriverUpdateTask;
     $InstallDriverUpdateButton.Enabled = $false;
-    $InstallDeiverUpdateButton.Label = 'Task created. Driver updates will run on next boot.';
+    $InstallDriverUpdateButton.Label = 'Task created. Driver updates will run on next boot.';
   })
 $GetActivationStatusButton.Add_Click({ GetActivationStatus })
 $ReloadButton.Add_Click({
