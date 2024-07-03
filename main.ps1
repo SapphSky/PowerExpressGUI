@@ -20,9 +20,9 @@ $InstallPSWindowsUpdate = {
     function GetModule {
       $Uri = 'https://psg-prod-eastus.azureedge.net/packages/pswindowsupdate.2.2.0.3.nupkg';
       $OutFile = 'C:\' + $(Split-Path -Path $Uri -Leaf);
-      $DestinationPath = """$env:ProgramFiles\PowerShell\Modules\pswindowsupdate""";
+      $DestinationPath = """""$env:ProgramFiles\PowerShell\Modules\pswindowsupdate""""";
 
-      if (Test-Path -Path """$DestinationPath\PSWindowsUpdate.dll""") {
+      if (Test-Path -Path """""$DestinationPath\PSWindowsUpdate.dll""""") {
         CheckForUpdates;
       }
       else {
@@ -30,7 +30,7 @@ $InstallPSWindowsUpdate = {
         Invoke-RestMethod -Uri $Uri -OutFile $OutFile -TimeoutSec 30;
         Expand-Archive -LiteralPath $OutFile -DestinationPath $DestinationPath;
   
-        if (Test-Path -Path """$DestinationPath\PSWindowsUpdate.dll""") {
+        if (Test-Path -Path """""$DestinationPath\PSWindowsUpdate.dll""""") {
           Write-Host 'Extraction Successful.';
           CheckForUpdates;
         }
