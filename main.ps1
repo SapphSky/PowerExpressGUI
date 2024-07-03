@@ -202,7 +202,7 @@ $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) 
 $InstallDriverUpdateButton.Add_Click({
     # Start-Process powershell -Wait -Verb RunAs -ArgumentList "-NoLogo -NoExit -Command $InstallPSWindowsUpdate";
     CreateScheduledDriverUpdateTask;
-    $InstallDriverUpdateButton.Disabled = $true;
+    $InstallDriverUpdateButton.Enabled = $false;
     $InstallDeiverUpdateButton.Label = 'Task created. Driver updates will run on next boot.';
   })
 $GetActivationStatusButton.Add_Click({ GetActivationStatus })
