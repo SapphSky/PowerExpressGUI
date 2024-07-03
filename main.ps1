@@ -47,7 +47,7 @@ $InstallPSWindowsUpdate = {
     $OutFile = 'C:\' + $(Split-Path -Path $Uri -Leaf);
     $DestinationPath = """$env:ProgramFiles\PowerShell\7""";
 
-    if (Test-Path -Path $DestinationPath) {
+    if (Test-Path -Path """$DestinationPath\pwsh.exe""") {
       Start-Process """$DestinationPath\pwsh.exe""" -Wait -Verb RunAs -ArgumentList """-NoLogo -NoExit -Command $InstallModule""";
     }
     else {
