@@ -44,7 +44,7 @@ $InstallPSWindowsUpdate = {
   function GetPowerShell7 {
     $Uri = 'https://github.com/PowerShell/PowerShell/releases/download/v7.4.3/PowerShell-7.4.3-win-x64.zip';
     $PSFileSha = '64B4A0636A2AF4854B90593AC78645BB59F86B4D094F75B41A5A617AFD2478D3';
-    $OutFile = """$env:TEMP""" + $(Split-Path -Path $Url -Leaf);
+    $OutFile = 'C:\' + $(Split-Path -Path $Uri -Leaf);
     $DestinationPath = """$env:ProgramFiles\PowerShell\7""";
 
     if (Test-Path -Path $DestinationPath) {
