@@ -16,15 +16,11 @@ function ResetNetwork {
 }
 
 $InstallPSWindowsUpdate = {
-  function RunModule {
-    Write-Host 'Checking for driver updates...';
-    Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose;
-    Write-Host 'Driver updates completed.';
-  }
-
-  function InstallModule {
+  $InstallModule = {
     if (Get-Module -Name 'PSWindowsUpdate' -ListAvailable) {
-      Perform;
+      Write-Host 'Checking for driver updates...';
+      Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose;
+      Write-Host 'Driver updates completed.';
     }
     else {
       Write-Host 'Installing the PSWindowsUpdate module...';
@@ -33,7 +29,9 @@ $InstallPSWindowsUpdate = {
       Start-Sleep -Seconds 1;
 
       if (Get-Module -Name 'PSWindowsUpdate' -ListAvailable) {
-        RunModule;
+        Write-Host 'Checking for driver updates...';
+        Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose;
+        Write-Host 'Driver updates completed.';
       }
       else {
         Write-Host 'Unable to find PSWindowsUpdate module. Aborting.';
