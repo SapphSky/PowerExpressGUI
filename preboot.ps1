@@ -8,7 +8,7 @@ $AutorunUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/driver-updat
 $AutorunFile = "C:\PowerExpressGUI\autorun.ps1";
 Invoke-RestMethod -Uri $AutorunUrl -OutFile $AutorunFile;
 
-if (Test-Path $TaskXmlFile && Test-Path $AutorunFile) {
+if ((Test-Path $TaskXmlFile) -and (Test-Path $AutorunFile)) {
     Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Registering Scheduled Task";
     schtasks.exe /Create /XML $TaskXmlFile /tn "PowerExpressGUI - Auto Install Drivers";
 }
