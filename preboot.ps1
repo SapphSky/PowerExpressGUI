@@ -12,15 +12,15 @@ if ((Test-Path $TaskXmlFile) -and (Test-Path $AutorunFile)) {
 
     # Creates a Scheduled Task to run our script at startup
     $Action = New-ScheduledTaskAction `
-        -Execute "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" `
-        -Argument "-Verb RunAs -WindowStyle Normal -File $AutorunFile";
+        -Execute "powershell" `
+        -Argument "Start-Process powershell -Verb RunAs -WindowStyle Normal -File $AutorunFile";
 
     $Trigger = New-ScheduledTaskTrigger `
         -AtLogon;
 
     $Principal = New-ScheduledTaskPrincipal `
-        -UserId "LOCALSERVICE" `
-        -LogonType ServiceAccount;
+        -GroupId "BUILTIN\Administrators" `
+        -RunLevel Highest;
     
     Register-ScheduledTask `
         -TaskName "PowerExpressGUI" `
