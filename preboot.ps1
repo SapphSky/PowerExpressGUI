@@ -1,12 +1,11 @@
 $Url = "https://github.com/SapphSky/PowerExpressGUI/raw/main/driver-update.ps1";
 $FilePath = "C:\PowerExpressGUI\autorun.ps1";
+# $schtasksCommand = 'schtasks /create /sc ONLOGON /tn "powerexpressgui\Install Drivers" /tr powershell.exe /ru System /mo ONLOGON /z /rl HIGHEST /delay 0000:10'
 
 # Download the script
-Write-Progress -Activity "Bootstrapping PowerExpressGUI" -Status "Downloading script";
+Write-Progress -Activity "Bootstrapping PowerExpressGUI" -Status "Downloading script" -PercentComplete -1;
 Invoke-RestMethod $Url -OutFile $FilePath;
-Write-Progress -Activity "Bootstrapping PowerExpressGUI" -Status "Registering Scheduled Task";
-
-# $schtasksCommand = 'schtasks /create /sc ONLOGON /tn "powerexpressgui\Install Drivers" /tr powershell.exe /ru System /mo ONLOGON /z /rl HIGHEST /delay 0000:10'
+Write-Progress -Activity "Bootstrapping PowerExpressGUI" -Status "Registering Scheduled Task" -PercentComplete -1;
 
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction -Execute $FilePath;
