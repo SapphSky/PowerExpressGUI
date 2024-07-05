@@ -1,5 +1,7 @@
+$ProgressTitle = "PowerExpressGUI Bootstrapper"
+
 if (-Not (Test-Path "C:\PowerExpressGUI\")) {
-    Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Creating directory";
+    Write-Progress -Activity $ProgressTitle -Status "Creating directory";
     New-Item -Path "C:\" -Name "PowerExpressGUI" -ItemType "directory";
 }
 
@@ -13,7 +15,7 @@ Invoke-RestMethod -Uri $AutorunUrl -OutFile $AutorunFile;
 # $TaskFile = "C:\PowerExpressGUI\task.xml";
 # Invoke-RestMethod -Uri $TaskUrl -OutFile $TaskFile;
 
-Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Registering Scheduled Task";
+Write-Progress -Activity $ProgressTitle -Status "Registering Scheduled Task";
 
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-Verb RunAs -File $AutorunFile";
