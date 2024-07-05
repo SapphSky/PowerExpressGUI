@@ -13,13 +13,13 @@ if ((Test-Path $TaskXmlFile) -and (Test-Path $AutorunFile)) {
     # Creates a Scheduled Task to run our script at startup
     $Action = New-ScheduledTaskAction `
         -Execute "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" `
-        -Argument "$AutorunFile";
+        -Argument "-Verb RunAs -WindowStyle Normal -File $AutorunFile";
 
     $Trigger = New-ScheduledTaskTrigger `
         -AtLogon;
 
     $Principal = New-ScheduledTaskPrincipal `
-        -UserId "NT AUTHORITY\SYSTEM" `
+        -UserId "LOCALSERVICE" `
         -LogonType ServiceAccount;
     
     Register-ScheduledTask `
@@ -28,11 +28,12 @@ if ((Test-Path $TaskXmlFile) -and (Test-Path $AutorunFile)) {
         -Action $Action `
         -Trigger $Trigger `
         -Principal $Principal;
+
+    $Task = Get-ScheduledTask -TaskName "PowerExpressGUI";
+    $TaskInfo = Get-ScheduledTaskInfo -InputObject $Task;
+    Write-Host $TaskInfo;
 }
 
 Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Completed";
 Start-Sleep -Seconds 1;
-$Task = Get-ScheduledTask -TaskName "PowerExpressGUI";
-$TaskInfo = Get-ScheduledTaskInfo -InputObject $Task;
-$TaskInfo;
 Start-Process "powershell" -Verb RunAs -Wait;
