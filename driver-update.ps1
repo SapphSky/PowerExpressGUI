@@ -1,6 +1,6 @@
-$Uri = 'https://psg-prod-eastus.azureedge.net/packages/pswindowsupdate.2.2.0.3.nupkg';
-$OutFile = 'C:\' + $(Split-Path -Path $Uri -Leaf) + '.zip';
-$DestinationPath = 'C:\Program Files\WindowsPowerShell\Modules\pswindowsupdate';
+# $Uri = 'https://psg-prod-eastus.azureedge.net/packages/pswindowsupdate.2.2.0.3.nupkg';
+# $OutFile = 'C:\' + $(Split-Path -Path $Uri -Leaf) + '.zip';
+# $DestinationPath = 'C:\Program Files\WindowsPowerShell\Modules\pswindowsupdate';
 
 function CheckForUpdates {
     Write-Host 'Checking for driver updates...';
@@ -13,6 +13,7 @@ if (Get-Module -Name PSWindowsUpdate) {
     CheckForUpdates;
 }
 else {
+    Write-Host 'Installing PSWindowsUpdate...';
     Install-PackageProvider -Name NuGet -Force;
     Set-PSRepository -Name "PSGallery" -InstallationPolicy Trusted;
     # Write-Host 'Downloading PSWindowsUpdate module...';
@@ -27,6 +28,7 @@ else {
     # Remove-Item -Path """$DestinationPath\*.nuspec""";
     # Start-Sleep -Seconds 1;
     Install-Module -Name PSWindowsUpdate -Force;
+    Start-Sleep -Seconds 1;
 
     if (Import-Module -Name $DestinationPath -Force) {
         Write-Host 'Extraction Successful.';

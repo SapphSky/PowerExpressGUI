@@ -1,10 +1,12 @@
+$Executable = "powershell.exe";
+$Url = "https://github.com/SapphSky/PowerExpressGUI/raw/main/driver-update.ps1";
+$ArgumentList = """-Command 'irm $Url | iex'""";
+$Command = """Start-Process $Executable -Verb RunAs -WindowStyle Normal -ArgumentList $ArgumentList""";
+$Argument = "-Command $Command";
 
-$Script = "irm https://github.com/SapphSky/PowerExpressGUI/raw/main/driver-update.ps1 | iex";
-$Command = "Start-Process powershell -Command { $Script }";
-$ArgumentList = "-NoLogo -Command { $Command }";
-$ActionArgument = "Start-Process powershell -Verb RunAs -ArgumentList '$ArgumentList'";
-$action = New-ScheduledTaskAction -Execute "powershell" -Argument $ActionArgument;
-$trigger = New-ScheduledTaskTrigger -AtStartup -RandomDelay (New-TimeSpan -Seconds 30);
-$settings = New-ScheduledTaskSettingsSet -DeleteExpiredTaskAfter (New-TimeSpan -Days 1);
+# Creates a Scheduled Task to run our script at startup
+$Action = New-ScheduledTaskAction -Execute $Execute -Argument $Argument;
+$Trigger = New-ScheduledTaskTrigger -AtStartup;
+$Settings = New-ScheduledTaskSettingsSet -AsJob -DeleteExpiredTaskAfter (New-TimeSpan -Days 1) -DontStopIfGoingOnBatteries $true -ExecutionTimeLimit (New-TimeSpan -Hours 8) -Priority 3 -StartWhenAvailable $true;
 
-Register-ScheduledTask -Trigger $trigger -Action $action -Settings $settings -Force -RunLevel Highest;
+Register-ScheduledTask AutoUpdateDrivers -Action $Action -Trigger $Trigger -Settings $Settings -RunLevel Highest;
