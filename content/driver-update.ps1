@@ -13,6 +13,7 @@ for ($i = 1; $i -le $MaxAttempts; $i++) {
         Import-Module -Name PSWindowsUpdate -Force;
     }
     else {
+        Write-Host "Checking for updates...";
         Install-WindowsUpdate -AcceptAll -UpdateType Driver;
         break;
     }
