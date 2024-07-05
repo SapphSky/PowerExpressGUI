@@ -1,3 +1,5 @@
+New-Item -Path "C:\" -Name "PowerExpressGUI" -ItemType "directory"
+
 # Download the Task Scheduler XML file
 $TaskXmlUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/task.xml";
 $TaskXmlFile = "C:\PowerExpressGUI\task.xml";
@@ -18,7 +20,8 @@ Start-Sleep -Seconds 1;
 
 # Disabled code, please ignore
 # Register-ScheduledTask -TaskName "PowerExpressGUI" -Xml $ScheduledTaskXML;
-# schtasks /create /sc ONLOGON /tn "powerexpressgui\Install Drivers" /tr "powershell.exe -NoLogo -NoExit -File $FilePath" /ru System /mo ONLOGON /z /rl HIGHEST /delay 0000:10;
+# schtasks /create /sc ONLOGON /tn "powerexpressgui\Install Drivers" /tr "powershell.exe -NoLogo -NoExit -File $FilePath" /ru System /z /rl HIGHEST /delay 0000:10;
+
 # Creates a Scheduled Task to run our script at startup
 # $Action = New-ScheduledTaskAction -Execute $FilePath;
 # $Trigger = New-ScheduledTaskTrigger -AtLogon;
