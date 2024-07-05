@@ -12,25 +12,28 @@ if ((Test-Path $TaskXmlFile) -and (Test-Path $AutorunFile)) {
 
     # Creates a Scheduled Task to run our script at startup
     $Action = New-ScheduledTaskAction `
-        -Execute "powershell" `
-        -Argument "-File $AutorunFile";
+        -Execute "C:\Windows\System32\WindowsPowerShell\v1.0\powershell.exe" `
+        -Argument "$AutorunFile";
 
     $Trigger = New-ScheduledTaskTrigger `
         -AtLogon;
 
-    # $Settings = New-ScheduledTaskSettingsSet `
-    # -DeleteExpiredTaskAfter (New-TimeSpan -Days 1);
+    $Principal = New-ScheduledTaskPrincipal `
+        -UserId "NT AUTHORITY\SYSTEM" `
+        -LogonType ServiceAccount;
     
     Register-ScheduledTask `
         -TaskName "PowerExpressGUI" `
         -Description "From SapphSky/PowerExpressGUI" `
         -Action $Action `
         -Trigger $Trigger `
-        # -Settings $Settings `
-        -RunLevel Highest `
-        -User "System";
+        -Principal $Principal `
+        -RunLevel Highest;
 }
 
 Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Completed";
-Start-Process "taskschd" -Verb RunAs -Wait;
 Start-Sleep -Seconds 1;
+$Task = Get-ScheduledTask -TaskName "PowerExpressGUI";
+$TaskInfo = Get-ScheduledTaskInfo -InputObject $Task;
+$TaskInfo;
+Start-Process "powershell" -Verb RunAs -Wait;
