@@ -17,7 +17,7 @@ Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Registering Sch
 
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-Verb RunAs -File $AutorunFile";
-$Trigger = New-ScheduledTaskTrigger -AtStartup;
+$Trigger = New-ScheduledTaskTrigger -AtLogon;
 $Settings = New-ScheduledTaskSettingsSet `
     -AllowStartIfOnBatteries $true `
     -DeleteExpiredTaskAfter (New-TimeSpan -Days 1) `
@@ -29,7 +29,11 @@ $Settings = New-ScheduledTaskSettingsSet `
 
 $Principal = New-ScheduledTaskPrincipal -GroupId "BUILTIN\Administrators" -RunLevel Highest;
 
-Register-ScheduledTask -TaskName "PowerExpressGUI" -Description "From SapphSky/PowerExpressGUI" `
+$TaskName = "PowerExpressGUI";
+$Description = """Runs a PowerShell script that automatically downloads and installs all driver updates through PSWindowsUpdate on startup.
+This task will automatically remove itself after 1 day.""";
+
+Register-ScheduledTask -TaskName $TaskName -Description $Description `
     -Action $Action -Principal $Principal -Settings $Settings -Trigger $Trigger;
 # Register-ScheduledTask -TaskName "PowerExpressGUI" -Description "From SapphSky/PowerExpressGUI" -Xml (Get-Content $TaskFile) | Out-String;
 
