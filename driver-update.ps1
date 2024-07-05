@@ -1,10 +1,11 @@
 function CheckForUpdates {
     Write-Host 'Checking for driver updates...';
-    Install-WindowsUpdate -AcceptAll -UpdateType Driver -Verbose -AutoReboot;
-    Write-Host 'Driver updates completed.';
+    Install-WindowsUpdate -AcceptAll -UpdateType Driver;
+    Write-Host 'Driver updates completed. Computer will now automatically restart (if necessary)';
 }
 
 if (Get-Module -Name PSWindowsUpdate) {
+    Write-Host 'PSWindowsUpdate module installed. Skipping installation.';
     CheckForUpdates;
 }
 else {
@@ -14,15 +15,15 @@ else {
     Set-PSRepository -Name PSGallery -InstallationPolicy Trusted;
     Write-Progress -Activity "Installing PSWindowsUpdate..." -CurrentOperation "Installing Module";
     Install-Module -Name PSWindowsUpdate -Force;
-    Write-Progress -Activity "Installing PSWindowsUpdate..." -Completed
+    Write-Progress -Activity "Installing PSWindowsUpdate..." -Completed;
 
-    if (!Get-Module -Name PSWindowsUpdate) {
-        Write-Error 'Error: Could not get PSWindowsUpdate module.';
-        return;
+    if (-Not (Get-Module -Name PSWindowsUpdate)) {
+        Write-Error 'Error: Could not find PSWindowsUpdate module.';
+        exit;
     }
 
     if (Import-Module -Name PSWindowsUpdate -Force) {
-        Write-Host 'Extraction Successful.';
+        Write-Host 'Module successfully installed.';
         CheckForUpdates;
     }
 }
