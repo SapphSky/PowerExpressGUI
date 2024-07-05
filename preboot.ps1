@@ -1,77 +1,26 @@
-$Url = "https://github.com/SapphSky/PowerExpressGUI/raw/main/driver-update.ps1";
-$FilePath = "C:\PowerExpressGUI\autorun.ps1";
+# Download the Task Scheduler XML file
+$TaskXmlUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/task.xml";
+$TaskXmlFile = "C:\PowerExpressGUI\task.xml";
+Invoke-RestMethod $TaskXmlUrl -OutFile $TaskXmlFile;
 
-[xml]$ScheduledTaskXML = @'
-<?xml version="1.0" encoding="UTF-16"?>
-<Task version="1.4" xmlns="http://schemas.microsoft.com/windows/2004/02/mit/task">
-  <RegistrationInfo>
-    <Date>2024-07-05T08:01:34.0942607</Date>
-    <Author>BUILTIN\Administrators</Author>
-    <Description>SapphSky/PowerExpressGUI</Description>
-    <URI>\PowerExpressGUI</URI>
-  </RegistrationInfo>
-  <Triggers>
-    <LogonTrigger>
-      <ExecutionTimeLimit>PT1H</ExecutionTimeLimit>
-      <Enabled>true</Enabled>
-      <Delay>PT10S</Delay>
-    </LogonTrigger>
-  </Triggers>
-  <Principals>
-    <Principal id="Author">
-      <UserId>S-1-5-21-1181867840-1005673334-3825115896-1000</UserId>
-      <LogonType>InteractiveToken</LogonType>
-      <RunLevel>HighestAvailable</RunLevel>
-    </Principal>
-  </Principals>
-  <Settings>
-    <MultipleInstancesPolicy>IgnoreNew</MultipleInstancesPolicy>
-    <DisallowStartIfOnBatteries>false</DisallowStartIfOnBatteries>
-    <StopIfGoingOnBatteries>true</StopIfGoingOnBatteries>
-    <AllowHardTerminate>true</AllowHardTerminate>
-    <StartWhenAvailable>false</StartWhenAvailable>
-    <RunOnlyIfNetworkAvailable>false</RunOnlyIfNetworkAvailable>
-    <IdleSettings>
-      <StopOnIdleEnd>true</StopOnIdleEnd>
-      <RestartOnIdle>false</RestartOnIdle>
-    </IdleSettings>
-    <AllowStartOnDemand>true</AllowStartOnDemand>
-    <Enabled>true</Enabled>
-    <Hidden>false</Hidden>
-    <RunOnlyIfIdle>false</RunOnlyIfIdle>
-    <DisallowStartOnRemoteAppSession>false</DisallowStartOnRemoteAppSession>
-    <UseUnifiedSchedulingEngine>true</UseUnifiedSchedulingEngine>
-    <WakeToRun>false</WakeToRun>
-    <ExecutionTimeLimit>PT1H</ExecutionTimeLimit>
-    <Priority>7</Priority>
-    <RestartOnFailure>
-      <Interval>PT5M</Interval>
-      <Count>3</Count>
-    </RestartOnFailure>
-  </Settings>
-  <Actions Context="Author">
-    <Exec>
-      <Command>"cmd"</Command>
-      <Argument>"powershell -File C:\PowerExpressGUI\autorun.ps1"</Argument>
-    </Exec>
-  </Actions>
-</Task>
-'@
+# Download the autorun script
+$AutorunUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/driver-update.ps1";
+$AutorunFile = "C:\PowerExpressGUI\autorun.ps1";
+Invoke-RestMethod -Uri $AutorunUrl -OutFile $AutorunFile;
 
-# Download the script
-Invoke-RestMethod -Uri $Url -OutFile $FilePath;
+if (Test-Path $TaskXmlFile && Test-Path $AutorunFile) {
+    Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Registering Scheduled Task";
+    schtasks.exe /Create /XML $TaskXmlFile /tn "PowerExpressGUI - Auto Install Drivers";
+}
 
-Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Registering Scheduled Task";
-Register-ScheduledTask -Xml $ScheduledTaskXML;
+Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Completed";
+Start-Sleep -Seconds 1;
 
+# Disabled code, please ignore
+# Register-ScheduledTask -TaskName "PowerExpressGUI" -Xml $ScheduledTaskXML;
 # schtasks /create /sc ONLOGON /tn "powerexpressgui\Install Drivers" /tr "powershell.exe -NoLogo -NoExit -File $FilePath" /ru System /mo ONLOGON /z /rl HIGHEST /delay 0000:10;
-
 # Creates a Scheduled Task to run our script at startup
 # $Action = New-ScheduledTaskAction -Execute $FilePath;
 # $Trigger = New-ScheduledTaskTrigger -AtLogon;
 # $Settings = New-ScheduledTaskSettingsSet -DeleteExpiredTaskAfter (New-TimeSpan -Days 1);
 # Register-ScheduledTask -TaskName "PowerExpressGUI" -Description "From SapphSky/PowerExpressGUI" -Action $Action -Trigger $Trigger -Settings $Settings -RunLevel Highest;
-
-
-Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Completed";
-Start-Sleep -Seconds 1;
