@@ -18,15 +18,15 @@ if ((Test-Path $TaskXmlFile) -and (Test-Path $AutorunFile)) {
     $Trigger = New-ScheduledTaskTrigger `
         -AtLogon;
 
-    $Settings = New-ScheduledTaskSettingsSet `
-        -DeleteExpiredTaskAfter (New-TimeSpan -Days 1);
+    # $Settings = New-ScheduledTaskSettingsSet `
+    # -DeleteExpiredTaskAfter (New-TimeSpan -Days 1);
     
     Register-ScheduledTask `
         -TaskName "PowerExpressGUI" `
         -Description "From SapphSky/PowerExpressGUI" `
         -Action $Action `
         -Trigger $Trigger `
-        -Settings $Settings `
+        # -Settings $Settings `
         -RunLevel Highest;
 }
 
