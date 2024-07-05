@@ -4,6 +4,8 @@ function CheckForUpdates {
     Write-Host 'Driver updates completed. Computer will now automatically restart (if necessary)';
 }
 
+Import-Module -Name PSWindowsUpdate -Force;
+
 if (Get-Module -Name PSWindowsUpdate) {
     Write-Host 'PSWindowsUpdate module installed. Skipping installation.';
     CheckForUpdates;
