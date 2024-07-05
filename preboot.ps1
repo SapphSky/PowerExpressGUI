@@ -31,5 +31,5 @@ if ((Test-Path $TaskXmlFile) -and (Test-Path $AutorunFile)) {
 }
 
 Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Completed";
-Start-Process "taskschd";
+Start-Process "taskschd" -Verb RunAs -Wait;
 Start-Sleep -Seconds 1;
