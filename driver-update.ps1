@@ -1,31 +1,22 @@
-function CheckForUpdates {
-    Write-Host 'Checking for driver updates...';
-    Install-WindowsUpdate -AcceptAll -UpdateType Driver;
-    Write-Host 'Driver updates completed. Computer will now automatically restart (if necessary)';
-}
+$MaxAttempts = 5;
 
-Import-Module -Name PSWindowsUpdate -Force;
-
-if (Get-Module -Name PSWindowsUpdate) {
-    Write-Host 'PSWindowsUpdate module installed. Skipping installation.';
-    CheckForUpdates;
-}
-else {
-    Write-Progress -Activity "Installing PSWindowsUpdate..." -CurrentOperation "Installing NuGet Package Provider";
-    Install-PackageProvider -Name NuGet -Force | Out-Null;
-    Write-Progress -Activity "Installing PSWindowsUpdate..." -CurrentOperation "Setting Installation Policy...";
-    Set-PSRepository -Name PSGallery -InstallationPolicy Trusted;
-    Write-Progress -Activity "Installing PSWindowsUpdate..." -CurrentOperation "Installing Module";
-    Install-Module -Name PSWindowsUpdate -Force;
-    Write-Progress -Activity "Installing PSWindowsUpdate..." -Completed;
-
+for ($i = 1; $i -le $MaxAttempts; $i++) {
+    if (-Not (Get-PackageProvider -Name Nuget)) {
+        Install-PackageProvider -Name NuGet -Force;
+    }
+    if (-Not (Get-PSRepository -Name PSGallery)) {
+        Set-PSRepository -Name PSGallery -InstallationPolicy Trusted;
+    }
     if (-Not (Get-Module -Name PSWindowsUpdate)) {
-        Write-Error 'Error: Could not find PSWindowsUpdate module.';
-        exit;
+        Install-Module -Name PSWindowsUpdate -Force;
+        Start-Sleep -Seconds 1;
+        Import-Module -Name PSWindowsUpdate -Force;
     }
-
-    if (Import-Module -Name PSWindowsUpdate -Force) {
-        Write-Host 'Module successfully installed.';
-        CheckForUpdates;
+    else {
+        Write-Host 'Checking for driver updates...';
+        Install-WindowsUpdate -AcceptAll -UpdateType Driver;
+        Write-Host 'Driver updates completed. Computer will now automatically restart (if necessary)';
+        break;
     }
+    $i++;
 }
