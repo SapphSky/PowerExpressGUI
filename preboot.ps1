@@ -16,7 +16,7 @@ if ((Test-Path $TaskXmlFile) -and (Test-Path $AutorunFile)) {
         -Argument "$AutorunFile";
 
     $Trigger = New-ScheduledTaskTrigger `
-        -AtLogon;
+        -AtStartup;
 
     $Principal = New-ScheduledTaskPrincipal `
         -UserId "NT AUTHORITY\SYSTEM" `
@@ -27,8 +27,7 @@ if ((Test-Path $TaskXmlFile) -and (Test-Path $AutorunFile)) {
         -Description "From SapphSky/PowerExpressGUI" `
         -Action $Action `
         -Trigger $Trigger `
-        -Principal $Principal `
-        -RunLevel Highest;
+        -Principal $Principal;
 }
 
 Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Completed";
