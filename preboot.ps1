@@ -36,7 +36,10 @@ $Description = """Runs a PowerShell script that automatically downloads and inst
 This task will automatically remove itself after 1 day.""";
 
 Register-ScheduledTask -TaskName $TaskName -Description $Description `
-    -Action $Action -Principal $Principal -Settings $Settings -Trigger $Trigger;
+    -Action $Action `
+    -Principal $Principal `
+    # -Settings $Settings `
+    -Trigger $Trigger;
 # Register-ScheduledTask -TaskName "PowerExpressGUI" -Description "From SapphSky/PowerExpressGUI" -Xml (Get-Content $TaskFile) | Out-String;
 
 Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Completed";
