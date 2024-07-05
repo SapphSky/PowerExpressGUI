@@ -150,4 +150,4 @@ $ReloadButton.Add_Click({
     $MainWindow.Close();
   })
 
-$MainWindow.ShowDialog() | Out-Null
+$MainWindow.ShowDialog() | Out-Null;
