@@ -27,7 +27,8 @@ if ((Test-Path $TaskXmlFile) -and (Test-Path $AutorunFile)) {
         -Action $Action `
         -Trigger $Trigger `
         # -Settings $Settings `
-        -RunLevel Highest;
+        -RunLevel Highest `
+        -User "System";
 }
 
 Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Completed";
