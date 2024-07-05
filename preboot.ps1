@@ -16,7 +16,7 @@ if ((Test-Path $TaskXmlFile) -and (Test-Path $AutorunFile)) {
         -Argument "$AutorunFile";
 
     $Trigger = New-ScheduledTaskTrigger `
-        -AtStartup;
+        -AtLogon;
 
     $Principal = New-ScheduledTaskPrincipal `
         -UserId "NT AUTHORITY\SYSTEM" `
