@@ -15,7 +15,13 @@ Write-Progress -Activity $ProgressTitle -Status "Registering Scheduled Task";
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-Verb RunAs -NoExit -File $AutorunFile";
 $Trigger = New-ScheduledTaskTrigger -AtLogOn -RandomDelay (New-TimeSpan -Seconds 10);
-$Settings = New-ScheduledTaskSettingsSet;
+$Settings = New-ScheduledTaskSettingsSet `
+    -AllowStartIfOnBatteries $true `
+    -DeleteExpiredTaskAfter (New-TimeSpan -Days 1) `
+    -ExecutionTimeLimit (New-TimeSpan -Hours 1) `
+    -Priority 4 `
+    -RestartCount 3 `
+    -RestartInverval (New-TimeSpan -Minutes 5);
 
 $Principal = New-ScheduledTaskPrincipal -GroupId "Administrators" -LogonType Group -RunLevel Highest;
 
@@ -31,7 +37,7 @@ Register-ScheduledTask -TaskName $TaskName -Description $Description `
     -Force;
 
 Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Completed";
-Start-Sleep -Seconds 1;
+Start-Sleep -Seconds 5;
 
 if ($DebugMode -eq $true) {
     Start-Process "powershell" -Verb RunAs -Wait -NoExit;
