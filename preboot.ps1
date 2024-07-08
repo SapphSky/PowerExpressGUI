@@ -19,7 +19,8 @@ $Principal = New-ScheduledTaskPrincipal `
 $Settings = New-ScheduledTaskSettingsSet `
     -AllowStartIfOnBatteries `
     -StartWhenAvailable `
-    -DontStopIfGoingOnBatteries
+    -DontStopIfGoingOnBatteries `
+    -Priority 1
 
 Register-ScheduledTask `
     -TaskName $TaskName `
