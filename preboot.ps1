@@ -15,13 +15,7 @@ Write-Progress -Activity $ProgressTitle -Status "Registering Scheduled Task";
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-Verb RunAs -File $AutorunFile";
 $Trigger = New-ScheduledTaskTrigger -AtLogOn -RandomDelay (New-TimeSpan -Seconds 10);
-$Settings = New-ScheduledTaskSettingsSet `
-    -AllowStartIfOnBatteries $true `
-    -DeleteExpiredTaskAfter (New-TimeSpan -Days 1) `
-    -ExecutionTimeLimit (New-TimeSpan -Hours 1) `
-    -Priority 4 `
-    -RestartCount 3 `
-    -RestartInverval (New-TimeSpan -Minutes 5);
+$Settings = New-ScheduledTaskSettingsSet;
 
 $Principal = New-ScheduledTaskPrincipal -GroupId "Administrators" -LogonType Group -RunLevel Highest;
 
