@@ -13,9 +13,8 @@ $Settings = New-ScheduledTaskSettingsSet `
     -RunOnlyIfNetworkAvailable $true `
     -DeleteExpiredTaskAfter (New-TimeSpan -Hours 1);
 
-$Description = "Runs a PowerShell script that automatically downloads and installs all driver updates through PSWindowsUpdate on startup. `
-This task will automatically remove itself after 1 day.";
-Register-ScheduledTask -TaskName "PowerExpressGUI" -Description $Description `
+Register-ScheduledTask -TaskName "PowerExpressGUI" -Description "Runs a PowerShell script that automatically downloads and installs all driver updates through PSWindowsUpdate on startup. `
+This task will automatically remove itself after 1 day." `
     -Action $Action `
     -Principal $Principal `
     -Settings $Settings `
@@ -24,7 +23,7 @@ Register-ScheduledTask -TaskName "PowerExpressGUI" -Description $Description `
 
 Start-Sleep -Seconds 1;
 
-if (Get-ScheduledTask -TaskName "PowerExpressGUI") {
+if (Get-ScheduledTask -TaskName "PowerExpressGUI" -ErrorAction SilentlyContinue) {
     # Download the autorun script
     Write-Progress -Activity $ProgressTitle -Status "Initializing directory";
     New-Item -Path $SetupPath -ItemType Directory -Force;
