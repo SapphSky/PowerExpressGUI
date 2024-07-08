@@ -13,7 +13,7 @@ $Trigger = New-ScheduledTaskTrigger `
     -AtLogon
 
 $Principal = New-ScheduledTaskPrincipal `
-    -GroupId "Administrators\defaultuser0" `
+    -UserId "Administrators\defaultuser0" `
     -RunLevel Highest
 
 $Settings = New-ScheduledTaskSettingsSet `
