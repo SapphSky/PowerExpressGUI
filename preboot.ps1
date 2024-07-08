@@ -14,7 +14,7 @@ function DownloadScript {
 }
 
 # Creates a Scheduled Task to run our script at startup
-$Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-Verb RunAs -NoExit -File $AutorunFile";
+$Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-Verb RunAs -NoExit -File C:\PowerExpressGUI\autorun.ps1";
 $Trigger = New-ScheduledTaskTrigger -AtLogOn -RandomDelay (New-TimeSpan -Seconds 10);
 $Settings = New-ScheduledTaskSettingsSet `
     -AllowStartIfOnBatteries $true `
