@@ -37,5 +37,5 @@ if (Get-ScheduledTask -TaskName "PowerExpressGUI" -ErrorAction SilentlyContinue)
 }
 else {
     Write-Progress -Activity $ProgressTitle -Status "Error: Failed to register task.";
-    Start-Process "powershell" -Verb RunAs -ArgumentList "-NoExit -Command 'echo Looks like PowerExpressGUI ran into an error. You can use this terminal to see what went wrong, or close and continue your installation like normal.'";
+    Start-Process "powershell" -Verb RunAs -Wait -ArgumentList "-NoExit -Command 'echo Looks like PowerExpressGUI ran into an error. You can use this terminal to see what went wrong, or close and continue your installation like normal.'";
 }
