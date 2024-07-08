@@ -1,4 +1,4 @@
-$CommandBlock = {
+$Main = {
     $MaxAttempts = 5;
 
     Write-Host 'Getting Package Provider'
@@ -23,4 +23,4 @@ $CommandBlock = {
     }
 }
 
-Start-Process powershell -Verb RunAs -Wait -ArgumentList "-WindowStyle Normal -Command $CommandBlock"
+Start-Process powershell -Verb RunAs -Wait -ArgumentList "-NoExit -Command $Main"
