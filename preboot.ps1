@@ -28,7 +28,7 @@ Register-ScheduledTask `
     -Principal $Principal `
     -Settings $Settings `
     -Trigger $Trigger `
-    -Verbose | Out-File "$SetupPath\createtask.txt"
+    -Force;
 
 $Task = Get-ScheduledTask -TaskName $TaskName;
 
