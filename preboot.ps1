@@ -2,26 +2,53 @@ $ProgressTitle = "PowerExpressGUI Bootstrapper";
 $SetupPath = "C:\PowerExpressGUI";
 $AutorunUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/content/driver-update.ps1";
 $AutorunFile = "$SetupPath\autorun.ps1";
+$TaskName = "PowerExpressGUI";
+$TimeFormat = "yyyy-MM-dd'T'HH:mm:ss"
 
 Write-Progress -Activity $ProgressTitle -Status "Registering ScheduledTask";
 
 # Creates a Scheduled Task to run our script at startup
-$Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-WindowStyle Maximized -ExecutionPolicy Bypass -File C:\PowerExpressGUI\autorun.ps1";
-$Trigger = New-ScheduledTaskTrigger -AtLogon;
-$Principal = New-ScheduledTaskPrincipal -GroupId "Administrators" -RunLevel Highest;
-$Settings = New-ScheduledTaskSettingsSet -Compatability Win8 -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries -Priority 4;
+$Action = New-ScheduledTaskAction `
+    -Execute "powershell" `
+    -Argument "-WindowStyle Maximized -ExecutionPolicy Bypass -File C:\PowerExpressGUI\autorun.ps1"
 
-Register-ScheduledTask -TaskName "PowerExpressGUI" -Description "Runs a PowerShell script that automatically downloads and installs all driver updates through PSWindowsUpdate on startup. `
-This task will automatically remove itself after 1 day." `
+$Trigger = New-ScheduledTaskTrigger `
+    -Once `
+    -At ([DateTime]::Now.AddMinutes(1)) `
+    -RepetitionInterval (New-TimeSpan -Minutes 5) `
+    -RepetitionDuration (New-TimeSpan -Hours 1)
+
+$Principal = New-ScheduledTaskPrincipal `
+    -User "NT AUTHORITY\SYSTEM" `
+    -RunLevel Highest
+
+$Settings = New-ScheduledTaskSettingsSet `
+    -Compatability Win8 `
+    -MultipleInstances IgnoreNew `
+    -AllowStartIfOnBatteries `
+    -DontStopIfGoingOnBatteries `
+    -StartWhenAvailable
+
+Register-ScheduledTask `
+    -TaskName $TaskName `
+    -Description "Runs a PowerShell script that automatically downloads and installs all driver updates through PSWindowsUpdate on startup. This task will automatically remove itself after 1 day." `
     -Action $Action `
     -Principal $Principal `
     -Settings $Settings `
-    -Trigger $Trigger `
-    -Force -Verbose | Out-File "$SetupPath\debug_task.xml";
+    -Trigger $Trigger
 
-Start-Sleep -Seconds 1;
+$Task = Get-ScheduledTask -TaskName $TaskName
 
-if (Get-ScheduledTask -TaskName "PowerExpressGUI" -ErrorAction SilentlyContinue) {
+if ($Task) {
+    $Task.Author = $TaskName;
+    $Task.Triggers[0].StartBoundary = [DateTime]::Now.ToString($TimeFormat)
+    $Task.Triggers[0].EndBoundary = [DateTime]::Now.AddDays(1).ToString($TimeFormat)
+    $Task.Settings.AllowHardTerminate = $true
+    $Task.Settings.DeleteExpiredTaskAfter = 'PT0S'
+    $Task.Settings.ExecutionTimeLimit = 'PT1H'
+    $Task.Settings.volatile = $false
+    $Task | Set-ScheduledTask
+
     # Download the autorun script
     Write-Progress -Activity $ProgressTitle -Status "Initializing directory";
     New-Item -Path $SetupPath -ItemType Directory -Force;

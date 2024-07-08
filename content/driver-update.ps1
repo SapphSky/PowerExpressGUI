@@ -13,7 +13,7 @@ for ($i = 1; $i -le $MaxAttempts; $i++) {
     }
     else {
         Write-Host "Checking for updates...";
-        Install-WindowsUpdate -AcceptAll -UpdateType Driver;
+        Install-WindowsUpdate -AcceptAll -UpdateType Driver -AutoReboot;
         break;
     }
     $i++;
