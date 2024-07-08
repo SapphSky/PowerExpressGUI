@@ -9,11 +9,11 @@ Write-Progress -Activity $ProgressTitle -Status "Registering ScheduledTask";
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction `
     -Execute "powershell" `
-    -Argument "-WindowStyle Normal -ExecutionPolicy Bypass -File C:\PowerExpressGUI\autorun.ps1"
+    -Argument "-ExecutionPolicy Bypass -File C:\PowerExpressGUI\autorun.ps1"
 
 $Trigger = New-ScheduledTaskTrigger `
     -Once `
-    -At ([DateTime]::Now)
+    -AtLogon
 
 $Principal = New-ScheduledTaskPrincipal `
     -GroupId "Administrators" `
