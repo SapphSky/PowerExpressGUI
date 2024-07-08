@@ -23,4 +23,4 @@ $CommandBlock = {
     }
 }
 
-Start-Process powershell -Verb RunAs -Wait -ArgumentList "-WindowStyle Normal -Command {$CommandBlock}"
+Start-Process powershell -Verb RunAs -Wait -ArgumentList "-WindowStyle Normal -Command $CommandBlock"
