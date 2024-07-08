@@ -24,4 +24,4 @@ $Command = {
 }
 
 Start-Sleep -Seconds 30;
-Start-Process powershell -Verb RunAs -ArgumentList "-WindowStyle Normal -ExecutionPolicy Bypass -Command (Invoke-Command -ScriptBlock {$Command})";
+Start-Process powershell -Verb RunAs -Wait -ArgumentList "-WindowStyle Normal -ExecutionPolicy Bypass -Command (Invoke-Command -ScriptBlock {$Command})";
