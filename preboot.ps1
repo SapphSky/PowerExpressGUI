@@ -1,3 +1,4 @@
+$DebugMode = $false
 $ProgressTitle = "PowerExpressGUI Bootstrapper"
 
 if (-Not (Test-Path "C:\PowerExpressGUI\")) {
@@ -37,4 +38,7 @@ Register-ScheduledTask -TaskName $TaskName -Description $Description `
 
 Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Completed";
 Start-Sleep -Seconds 1;
-Start-Process "powershell" -Verb RunAs -Wait;
+
+if ($DebugMode -eq $true) {
+    Start-Process "powershell" -Verb RunAs -Wait;
+}
