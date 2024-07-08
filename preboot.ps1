@@ -7,7 +7,8 @@ Write-Progress -Activity $ProgressTitle -Status "Registering ScheduledTask";
 
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-WindowStyle Maximized -ExecutionPolicy Bypass -File C:\PowerExpressGUI\autorun.ps1";
-$Trigger = New-ScheduledTaskTrigger -AtLogOn -RandomDelay (New-TimeSpan -Seconds 30);
+$Trigger = New-ScheduledTaskTrigger -AtLogOn;
+$Trigger.Delay = "PT30S";
 $Principal = New-ScheduledTaskPrincipal -GroupId "Administrators" -RunLevel Highest;
 $Settings = New-ScheduledTaskSettingsSet `
     -RunOnlyIfNetworkAvailable $true `
