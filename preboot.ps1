@@ -1,18 +1,16 @@
 $ProgressTitle = "PowerExpressGUI Bootstrapper";
 $TaskName = "PowerExpressGUI";
-# $SetupPath = "C:\PowerExpressGUI";
-# $AutorunFile = "$SetupPath\autorun.ps1";
-$AutorunUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/content/driver-update.ps1";
+$TaskDesc = "Runs a PowerShell script that automatically launches PowerExpressGUI on login.";
+$SourceUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/content/driver-update.ps1";
 
 Write-Progress -Activity $ProgressTitle -Status "Registering ScheduledTask";
 
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction `
     -Execute "powershell" `
-    -Argument "-ExecutionPolicy Bypass -Command 'irm $AutorunUrl | iex'"
+    -Argument "-ExecutionPolicy Bypass -Command 'irm $SourceUrl | iex'"
 
 $Trigger = New-ScheduledTaskTrigger `
-    -Once `
     -AtLogon
 
 $Principal = New-ScheduledTaskPrincipal `
@@ -26,7 +24,7 @@ $Settings = New-ScheduledTaskSettingsSet `
 
 Register-ScheduledTask `
     -TaskName $TaskName `
-    -Description "Runs a PowerShell script that automatically downloads and installs all driver updates through PSWindowsUpdate on startup." `
+    -Description $TaskDesc `
     -Action $Action `
     -Principal $Principal `
     -Settings $Settings `
@@ -36,12 +34,6 @@ Register-ScheduledTask `
 $Task = Get-ScheduledTask -TaskName $TaskName;
 
 if ($Task) {
-    # Write-Progress -Activity $ProgressTitle -Status "Initializing directory";
-    # New-Item -Path $SetupPath -ItemType Directory -Force;
-
-    # Write-Progress -Activity $ProgressTitle -Status "Downloading files";
-    # Invoke-RestMethod -Uri $AutorunUrl -OutFile $AutorunFile;
-
     Write-Progress -Activity $ProgressTitle -Status "Completed!";
     Start-Sleep -Seconds 1;
 }
