@@ -3,7 +3,7 @@ $SetupPath = "C:\PowerExpressGUI";
 $AutorunUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/content/driver-update.ps1";
 $AutorunFile = "$SetupPath\autorun.ps1";
 $TaskName = "PowerExpressGUI";
-$TimeFormat = "yyyy-MM-dd'T'HH:mm:ss"
+$TimeFormat = "yyyy-MM-dd'T'HH:mm:ss";
 
 Write-Progress -Activity $ProgressTitle -Status "Registering ScheduledTask";
 
@@ -14,12 +14,10 @@ $Action = New-ScheduledTaskAction `
 
 $Trigger = New-ScheduledTaskTrigger `
     -Once `
-    -At ([DateTime]::Now.AddMinutes(1)) `
-    -RepetitionInterval (New-TimeSpan -Minutes 5) `
-    -RepetitionDuration (New-TimeSpan -Hours 1)
+    -At ([DateTime]::Now)
 
 $Principal = New-ScheduledTaskPrincipal `
-    -User "NT AUTHORITY\SYSTEM" `
+    GroupId "Administrators" `
     -RunLevel Highest
 
 $Settings = New-ScheduledTaskSettingsSet `
@@ -31,23 +29,23 @@ $Settings = New-ScheduledTaskSettingsSet `
 
 Register-ScheduledTask `
     -TaskName $TaskName `
-    -Description "Runs a PowerShell script that automatically downloads and installs all driver updates through PSWindowsUpdate on startup. This task will automatically remove itself after 1 day." `
+    -Description "Runs a PowerShell script that automatically downloads and installs all driver updates through PSWindowsUpdate on startup." `
     -Action $Action `
     -Principal $Principal `
     -Settings $Settings `
     -Trigger $Trigger
 
-$Task = Get-ScheduledTask -TaskName $TaskName
+$Task = Get-ScheduledTask -TaskName $TaskName;
 
 if ($Task) {
-    $Task.Author = $TaskName;
-    $Task.Triggers[0].StartBoundary = [DateTime]::Now.ToString($TimeFormat)
-    $Task.Triggers[0].EndBoundary = [DateTime]::Now.AddDays(1).ToString($TimeFormat)
-    $Task.Settings.AllowHardTerminate = $true
-    $Task.Settings.DeleteExpiredTaskAfter = 'PT0S'
-    $Task.Settings.ExecutionTimeLimit = 'PT1H'
-    $Task.Settings.volatile = $false
-    $Task | Set-ScheduledTask
+    # $Task.Author = $TaskName;
+    # $Task.Triggers[0].StartBoundary = [DateTime]::Now.ToString($TimeFormat)
+    # $Task.Triggers[0].EndBoundary = [DateTime]::Now.AddDays(1).ToString($TimeFormat)
+    # $Task.Settings.AllowHardTerminate = $true
+    # $Task.Settings.DeleteExpiredTaskAfter = 'PT0S'
+    # $Task.Settings.ExecutionTimeLimit = 'PT1H'
+    # $Task.Settings.volatile = $false
+    # $Task | Set-ScheduledTask
 
     # Download the autorun script
     Write-Progress -Activity $ProgressTitle -Status "Initializing directory";
