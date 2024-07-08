@@ -1,9 +1,8 @@
 $ProgressTitle = "PowerExpressGUI Bootstrapper";
-$SetupPath = "C:\PowerExpressGUI";
-$AutorunUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/content/driver-update.ps1";
-$AutorunFile = "$SetupPath\autorun.ps1";
 $TaskName = "PowerExpressGUI";
-$TimeFormat = "yyyy-MM-dd'T'HH:mm:ss";
+$SetupPath = "C:\PowerExpressGUI";
+$AutorunFile = "$SetupPath\autorun.ps1";
+$AutorunUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/content/driver-update.ps1";
 
 Write-Progress -Activity $ProgressTitle -Status "Registering ScheduledTask";
 
@@ -21,8 +20,6 @@ $Principal = New-ScheduledTaskPrincipal `
     -RunLevel Highest
 
 $Settings = New-ScheduledTaskSettingsSet `
-    -Compatability Win8 `
-    -MultipleInstances IgnoreNew `
     -AllowStartIfOnBatteries `
     -DontStopIfGoingOnBatteries `
     -StartWhenAvailable
@@ -33,20 +30,12 @@ Register-ScheduledTask `
     -Action $Action `
     -Principal $Principal `
     -Settings $Settings `
-    -Trigger $Trigger
+    -Trigger $Trigger `
+    -Verbose | Out-File $SetupPath\createtask.txt
 
 $Task = Get-ScheduledTask -TaskName $TaskName;
 
 if ($Task) {
-    # $Task.Author = $TaskName;
-    # $Task.Triggers[0].StartBoundary = [DateTime]::Now.ToString($TimeFormat)
-    # $Task.Triggers[0].EndBoundary = [DateTime]::Now.AddDays(1).ToString($TimeFormat)
-    # $Task.Settings.AllowHardTerminate = $true
-    # $Task.Settings.DeleteExpiredTaskAfter = 'PT0S'
-    # $Task.Settings.ExecutionTimeLimit = 'PT1H'
-    # $Task.Settings.volatile = $false
-    # $Task | Set-ScheduledTask
-
     # Download the autorun script
     Write-Progress -Activity $ProgressTitle -Status "Initializing directory";
     New-Item -Path $SetupPath -ItemType Directory -Force;
