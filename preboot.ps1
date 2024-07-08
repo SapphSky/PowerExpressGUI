@@ -9,12 +9,6 @@ if (-Not (Test-Path "C:\PowerExpressGUI\")) {
 $AutorunUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/content/driver-update.ps1";
 $AutorunFile = "C:\PowerExpressGUI\autorun.ps1";
 Invoke-RestMethod -Uri $AutorunUrl -OutFile $AutorunFile;
-
-# Download the scheduled task
-# $TaskUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/content/task.xml";
-# $TaskFile = "C:\PowerExpressGUI\task.xml";
-# Invoke-RestMethod -Uri $TaskUrl -OutFile $TaskFile;
-
 Write-Progress -Activity $ProgressTitle -Status "Registering Scheduled Task";
 
 # Creates a Scheduled Task to run our script at startup
@@ -29,7 +23,7 @@ $Settings = New-ScheduledTaskSettingsSet;
 # -RestartInverval (New-TimeSpan -Minutes 5) `
 # -StartWhenAvailable $true;
 
-$Principal = New-ScheduledTaskPrincipal -GroupId "BUILTIN\Administrators" -RunLevel Highest;
+$Principal = New-ScheduledTaskPrincipal -UserId "NT AUTHORITY\SYSTEM" -LogonType ServiceAccount -RunLevel Highest;
 
 $TaskName = "PowerExpressGUI";
 $Description = """Runs a PowerShell script that automatically downloads and installs all driver updates through PSWindowsUpdate on startup.
@@ -40,8 +34,7 @@ Register-ScheduledTask -TaskName $TaskName -Description $Description `
     -Principal $Principal `
     -Settings $Settings `
     -Trigger $Trigger;
-# Register-ScheduledTask -TaskName "PowerExpressGUI" -Description "From SapphSky/PowerExpressGUI" -Xml (Get-Content $TaskFile) | Out-String;
 
 Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Completed";
 Start-Sleep -Seconds 1;
-# Start-Process "powershell" -Verb RunAs -Wait;
+Start-Process "powershell" -Verb RunAs -Wait;
