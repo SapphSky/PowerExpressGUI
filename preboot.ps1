@@ -20,7 +20,7 @@ $Principal = New-ScheduledTaskPrincipal `
     -RunLevel Highest
 
 $Settings = New-ScheduledTaskSettingsSet `
-    -AllowStartOnBatteries `
+    -AllowStartIfOnBatteries `
     -StartWhenAvailable `
     -DontStopIfGoingOnBatteries `
     -Priority 4;
