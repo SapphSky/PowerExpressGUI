@@ -1,6 +1,7 @@
 $ProgressTitle = "PowerExpressGUI Bootstrapper";
+$SetupPath = "C:\PowerExpressGUI";
 $AutorunUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/content/driver-update.ps1";
-$AutorunFile = "C:\PowerExpressGUI\autorun.ps1";
+$AutorunFile = "$SetupPath\autorun.ps1";
 
 Write-Progress -Activity $ProgressTitle -Status "Registering Scheduled Task";
 
@@ -26,7 +27,7 @@ Start-Sleep -Seconds 1;
 if (Get-ScheduledTask -TaskName "PowerExpressGUI") {
     # Download the autorun script
     Write-Progress -Activity $ProgressTitle -Status "Initializing directory";
-    New-Item -Path "C:\PowerExpressGUI" -ItemType Directory -Force;
+    New-Item -Path $SetupPath -ItemType Directory -Force;
 
     Write-Progress -Activity $ProgressTitle -Status "Downloading files";
     Invoke-RestMethod -Uri $AutorunUrl -OutFile $AutorunFile;
