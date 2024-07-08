@@ -24,7 +24,9 @@ Register-ScheduledTask -TaskName "PowerExpressGUI" -Description $Description `
     -Trigger $Trigger `
     -Force;
 
-if (Get-ScheduledTask -TaskName $TaskName) {
+Start-Sleep -Seconds 1;
+
+if (Get-ScheduledTask -TaskName "PowerExpressGUI") {
     # Download the autorun script
     if (-Not (Test-Path "C:\PowerExpressGUI\")) {
         Write-Progress -Activity $ProgressTitle -Status "Creating directory";
