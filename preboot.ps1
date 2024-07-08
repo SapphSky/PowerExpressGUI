@@ -13,7 +13,7 @@ Invoke-RestMethod -Uri $AutorunUrl -OutFile $AutorunFile;
 Write-Progress -Activity $ProgressTitle -Status "Registering Scheduled Task";
 
 # Creates a Scheduled Task to run our script at startup
-$Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-Verb RunAs -File $AutorunFile";
+$Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-Verb RunAs -NoExit -File $AutorunFile";
 $Trigger = New-ScheduledTaskTrigger -AtLogOn -RandomDelay (New-TimeSpan -Seconds 10);
 $Settings = New-ScheduledTaskSettingsSet;
 
