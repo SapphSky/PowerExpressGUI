@@ -1,6 +1,8 @@
 $MaxAttempts = 5;
 
-Get-PackageProvider -Name Nuget -ForceBootstrap;
+Write-Host 'Getting Package Provider'
+Get-PackageProvider -Name Nuget -ForceBootstrap | Out-Null;
+Write-Host 'Setting Repository'
 Set-PSRepository -Name PSGallery -InstallationPolicy Trusted;
 
 for ($i = 1; $i -le $MaxAttempts; $i++) {

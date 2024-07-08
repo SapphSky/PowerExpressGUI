@@ -19,7 +19,12 @@ $Principal = New-ScheduledTaskPrincipal `
     -GroupId "Administrators" `
     -RunLevel Highest
 
-$Settings = New-ScheduledTaskSettingsSet;
+$Settings = New-ScheduledTaskSettingsSet `
+    -Compatability Win8 `
+    -AllowStartOnBatteries `
+    -StartWhenAvailable `
+    -DontStopIfGoingOnBatteries `
+    -Priority 4;
 
 Register-ScheduledTask `
     -TaskName $TaskName `
