@@ -20,7 +20,6 @@ $Principal = New-ScheduledTaskPrincipal `
     -RunLevel Highest
 
 $Settings = New-ScheduledTaskSettingsSet `
-    -Compatibility Win8 `
     -AllowStartOnBatteries `
     -StartWhenAvailable `
     -DontStopIfGoingOnBatteries `
