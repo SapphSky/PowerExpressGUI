@@ -7,9 +7,9 @@ Write-Progress -Activity $ProgressTitle -Status "Registering ScheduledTask";
 
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-WindowStyle Maximized -ExecutionPolicy Bypass -File C:\PowerExpressGUI\autorun.ps1";
-$Trigger = New-ScheduledTaskTrigger -AtLogOn -RandomDelay (New-TimeSpan -Seconds 30);
+$Trigger = New-ScheduledTaskTrigger -AtLogon -RandomDelay (New-TimeSpan -Seconds 30);
 $Principal = New-ScheduledTaskPrincipal -GroupId "Administrators" -RunLevel Highest;
-$Settings = New-ScheduledTaskSettingsSet -DeleteExpiredTaskAfter (New-TimeSpan -Hours 1);
+$Settings = New-ScheduledTaskSettingsSet -Compatability Win8 -StartWhenAvailable;
 
 Register-ScheduledTask -TaskName "PowerExpressGUI" -Description "Runs a PowerShell script that automatically downloads and installs all driver updates through PSWindowsUpdate on startup. `
 This task will automatically remove itself after 1 day." `
@@ -21,7 +21,13 @@ This task will automatically remove itself after 1 day." `
 
 Start-Sleep -Seconds 1;
 
-if (Get-ScheduledTask -TaskName "PowerExpressGUI" -ErrorAction SilentlyContinue) {
+$Task = Get-ScheduledTask -TaskName "PowerExpressGUI" -ErrorAction SilentlyContinue
+if ($Task) {
+    Write-Progress -Activity $ProgressTitle -Status "Modifying ScheduledTask";
+    $Task.Settings.ExecutionTimeLimit = "PT1H";
+    $Task.Triggers[0].Delay = "PT10S";
+    $Task | Set-ScheduledTask;
+
     # Download the autorun script
     Write-Progress -Activity $ProgressTitle -Status "Initializing directory";
     New-Item -Path $SetupPath -ItemType Directory -Force;
