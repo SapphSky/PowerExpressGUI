@@ -3,16 +3,15 @@ $ProgressTitle = "PowerExpressGUI Bootstrapper";
 Write-Progress -Activity $ProgressTitle -Status "Registering Scheduled Task";
 
 # Creates a Scheduled Task to run our script at startup
-$Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-ExecutionPolicy Bypass -File C:\PowerExpressGUI\autorun.ps1";
-$Trigger = New-ScheduledTaskTrigger -AtLogOn -RandomDelay (New-TimeSpan -Seconds 10);
+$Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-WindowStyle Maximized -ExecutionPolicy Bypass -File C:\PowerExpressGUI\autorun.ps1";
+$Trigger = New-ScheduledTaskTrigger -AtLogOn;
+$Trigger.Delay = "PT10S";
 $Principal = New-ScheduledTaskPrincipal -GroupId "Administrators" -RunLevel Highest;
-$Settings = New-ScheduledTaskSettingsSet;
-# -AllowStartIfOnBatteries $true `
-# -DeleteExpiredTaskAfter (New-TimeSpan -Days 1) `
-# -ExecutionTimeLimit (New-TimeSpan -Hours 1) `
-# -Priority 4 `
-# -RestartCount 3 `
-# -RestartInverval (New-TimeSpan -Minutes 5);
+$Settings = New-ScheduledTaskSettingsSet `
+    -RestartCount 3 `
+    -RestartInverval (New-TimeSpan -Minutes 5) `
+    -RunOnlyIfNetworkAvailable `
+    -DeleteExpiredTaskAfter (New-TimeSpan -Hours 1);
 
 $Description = "Runs a PowerShell script that automatically downloads and installs all driver updates through PSWindowsUpdate on startup. `
 This task will automatically remove itself after 1 day.";
