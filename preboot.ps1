@@ -20,14 +20,14 @@ Write-Progress -Activity $ProgressTitle -Status "Registering Scheduled Task";
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-Verb RunAs -File $AutorunFile";
 $Trigger = New-ScheduledTaskTrigger -AtLogon;
-$Settings = New-ScheduledTaskSettingsSet `
-    -AllowStartIfOnBatteries $true `
-    -DeleteExpiredTaskAfter (New-TimeSpan -Days 1) `
-    -ExecutionTimeLimit (New-TimeSpan -Hours 1) `
-    -Priority 4 `
-    -RestartCount 3 `
-    -RestartInverval (New-TimeSpan -Minutes 5) `
-    -StartWhenAvailable $true;
+$Settings = New-ScheduledTaskSettingsSet;
+# -AllowStartIfOnBatteries $true `
+# -DeleteExpiredTaskAfter (New-TimeSpan -Days 1) `
+# -ExecutionTimeLimit (New-TimeSpan -Hours 1) `
+# -Priority 4 `
+# -RestartCount 3 `
+# -RestartInverval (New-TimeSpan -Minutes 5) `
+# -StartWhenAvailable $true;
 
 $Principal = New-ScheduledTaskPrincipal -GroupId "BUILTIN\Administrators" -RunLevel Highest;
 
@@ -38,7 +38,7 @@ This task will automatically remove itself after 1 day.""";
 Register-ScheduledTask -TaskName $TaskName -Description $Description `
     -Action $Action `
     -Principal $Principal `
-    # -Settings $Settings `
+    -Settings $Settings `
     -Trigger $Trigger;
 # Register-ScheduledTask -TaskName "PowerExpressGUI" -Description "From SapphSky/PowerExpressGUI" -Xml (Get-Content $TaskFile) | Out-String;
 
