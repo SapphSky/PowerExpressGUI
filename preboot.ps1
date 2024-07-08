@@ -10,9 +10,9 @@ function DownloadScript {
     $AutorunUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/content/driver-update.ps1";
     $AutorunFile = "C:\PowerExpressGUI\autorun.ps1";
     Invoke-RestMethod -Uri $AutorunUrl -OutFile $AutorunFile;
-    Write-Progress -Activity $ProgressTitle -Status "Registering Scheduled Task";
 }
 
+Write-Progress -Activity $ProgressTitle -Status "Registering Scheduled Task";
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-Verb RunAs -NoExit -File C:\PowerExpressGUI\autorun.ps1";
 $Trigger = New-ScheduledTaskTrigger -AtLogOn -RandomDelay (New-TimeSpan -Seconds 10);
