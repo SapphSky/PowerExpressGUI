@@ -1,8 +1,8 @@
-$ProgressTitle = "PowerExpressGUI Bootstrapper";
-$TaskName = "PowerExpressGUI";
-$TaskDesc = "Runs a PowerShell script that automatically launches PowerExpressGUI on login.";
+$ProgressTitle = "PowerExpressGUI Bootstrapper"
+$TaskName = "PowerExpressGUI"
+$TaskDesc = "Runs a PowerShell script that automatically launches PowerExpressGUI on login."
 
-Write-Progress -Activity $ProgressTitle -Status "Registering ScheduledTask";
+Write-Progress -Activity $ProgressTitle -Status "Registering ScheduledTask"
 
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction `
@@ -19,7 +19,7 @@ $Principal = New-ScheduledTaskPrincipal `
 $Settings = New-ScheduledTaskSettingsSet `
     -AllowStartIfOnBatteries `
     -StartWhenAvailable `
-    -DontStopIfGoingOnBatteries;
+    -DontStopIfGoingOnBatteries
 
 Register-ScheduledTask `
     -TaskName $TaskName `
@@ -28,15 +28,15 @@ Register-ScheduledTask `
     -Principal $Principal `
     -Settings $Settings `
     -Trigger $Trigger `
-    -Force;
+    -Force
 
-$Task = Get-ScheduledTask -TaskName $TaskName;
+$Task = Get-ScheduledTask -TaskName $TaskName
 
 if ($Task) {
-    Write-Progress -Activity $ProgressTitle -Status "Completed!";
-    Start-Sleep -Seconds 1;
+    Write-Progress -Activity $ProgressTitle -Status "Completed!"
+    Start-Sleep -Seconds 1
 }
 else {
-    Write-Progress -Activity $ProgressTitle -Status "Error: Failed to register task.";
-    Start-Process "powershell" -Verb RunAs -Wait -ArgumentList "-NoExit -Command 'echo PowerExpressGUI ran into an error. Use this terminal to debug, or close and continue the installation like normal.'";
+    Write-Progress -Activity $ProgressTitle -Status "Error: Failed to register task."
+    Start-Process "powershell" -Verb RunAs -Wait -ArgumentList "-NoExit -Command 'echo PowerExpressGUI ran into an error. Use this terminal to debug, or close and continue the installation like normal.'"
 }
