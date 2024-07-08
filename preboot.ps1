@@ -1,5 +1,5 @@
-$DebugMode = $false
-$ProgressTitle = "PowerExpressGUI Bootstrapper"
+$DebugMode = $false;
+$ProgressTitle = "PowerExpressGUI Bootstrapper";
 
 if (-Not (Test-Path "C:\PowerExpressGUI\")) {
     Write-Progress -Activity $ProgressTitle -Status "Creating directory";
