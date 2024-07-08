@@ -1,4 +1,6 @@
 $ProgressTitle = "PowerExpressGUI Bootstrapper";
+$AutorunUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/content/driver-update.ps1";
+$AutorunFile = "C:\PowerExpressGUI\autorun.ps1";
 
 Write-Progress -Activity $ProgressTitle -Status "Registering Scheduled Task";
 
@@ -24,19 +26,16 @@ Start-Sleep -Seconds 1;
 
 if (Get-ScheduledTask -TaskName "PowerExpressGUI") {
     # Download the autorun script
-    if (-Not (Test-Path "C:\PowerExpressGUI\")) {
-        Write-Progress -Activity $ProgressTitle -Status "Creating directory";
-        New-Item -Path "C:\" -Name "PowerExpressGUI" -ItemType "directory";
-    }
-    $AutorunUrl = "https://github.com/SapphSky/PowerExpressGUI/raw/main/content/driver-update.ps1";
-    $AutorunFile = "C:\PowerExpressGUI\autorun.ps1";
+    Write-Progress -Activity $ProgressTitle -Status "Initializing directory";
+    New-Item -Path "C:\PowerExpressGUI" -ItemType Directory -Force;
+    
+    Write-Progress -Activity $ProgressTitle -Status "Downloading files";
     Invoke-RestMethod -Uri $AutorunUrl -OutFile $AutorunFile;
 
-    Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Completed!";
+    Write-Progress -Activity $ProgressTitle -Status "Completed!";
+    Start-Sleep -Seconds 1;
 }
 else {
-    Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Error: Failed to register task.";
-    Start-Process "powershell" -Verb RunAs -Wait -ArgumentList "-Command 'echo Looks like PowerExpressGUI ran into an error. You can use this terminal to see what went wrong, or close and continue your installation like normal.'";
+    Write-Progress -Activity $ProgressTitle -Status "Error: Failed to register task.";
+    Start-Process "powershell" -Verb RunAs -ArgumentList "-NoExit -Command 'echo Looks like PowerExpressGUI ran into an error. You can use this terminal to see what went wrong, or close and continue your installation like normal.'";
 }
-
-Start-Sleep -Seconds 1;
