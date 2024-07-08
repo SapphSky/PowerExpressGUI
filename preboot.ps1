@@ -16,7 +16,7 @@ $Trigger = New-ScheduledTaskTrigger `
     -At ([DateTime]::Now)
 
 $Principal = New-ScheduledTaskPrincipal `
-    GroupId "Administrators" `
+    -GroupId "Administrators" `
     -RunLevel Highest
 
 $Settings = New-ScheduledTaskSettingsSet;
