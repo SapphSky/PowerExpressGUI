@@ -7,7 +7,7 @@ Write-Progress -Activity $ProgressTitle -Status "Registering ScheduledTask"
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction `
     -Execute 'powershell' `
-    -Argument '-ExecutionPolicy Bypass -NoExit -Command "Invoke-RestMethod https://github.com/SapphSky/PowerExpressGUI/raw/main/content/driver-update.ps1 | Invoke-Expression"'
+    -Argument '-ExecutionPolicy Bypass -NoExit -Command "Invoke-RestMethod https://github.com/SapphSky/PowerExpressGUI/raw/main/main.ps1 | Invoke-Expression"'
 
 $Trigger = New-ScheduledTaskTrigger `
     -AtLogon

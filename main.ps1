@@ -1,11 +1,6 @@
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName System.Windows.Forms
 
-function ConnectToWifi {
-  Write-Host 'Connecting to 2ARTech network...';
-  netsh wlan connect ssid=$NetworkSSID name='Test' key=$NetworkPassword
-}
-
 function ResetNetwork {
   ipconfig /release
   ipconfig /flushdns
