@@ -27,8 +27,8 @@ $Settings = New-ScheduledTaskSettingsSet;
 $Principal = New-ScheduledTaskPrincipal -GroupId "Administrators" -RunLevel Highest;
 
 $TaskName = "PowerExpressGUI";
-$Description = """Runs a PowerShell script that automatically downloads and installs all driver updates through PSWindowsUpdate on startup.
-This task will automatically remove itself after 1 day.""";
+$Description = "Runs a PowerShell script that automatically downloads and installs all driver updates through PSWindowsUpdate on startup. `
+This task will automatically remove itself after 1 day.";
 
 Register-ScheduledTask -TaskName $TaskName -Description $Description `
     -Action $Action `
