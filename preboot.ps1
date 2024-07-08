@@ -10,7 +10,7 @@ $Principal = New-ScheduledTaskPrincipal -GroupId "Administrators" -RunLevel High
 $Settings = New-ScheduledTaskSettingsSet `
     -RestartCount 3 `
     -RestartInverval (New-TimeSpan -Minutes 5) `
-    -RunOnlyIfNetworkAvailable `
+    -RunOnlyIfNetworkAvailable $true `
     -DeleteExpiredTaskAfter (New-TimeSpan -Hours 1);
 
 $Description = "Runs a PowerShell script that automatically downloads and installs all driver updates through PSWindowsUpdate on startup. `
