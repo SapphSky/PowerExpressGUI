@@ -6,8 +6,7 @@ Write-Progress -Activity $ProgressTitle -Status "Registering Scheduled Task";
 
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-WindowStyle Maximized -ExecutionPolicy Bypass -File C:\PowerExpressGUI\autorun.ps1";
-$Trigger = New-ScheduledTaskTrigger -AtLogOn;
-$Trigger.Delay = "PT30S";
+$Trigger = New-ScheduledTaskTrigger -AtLogOn -RandomDelay (New-TimeSpan -Minutes 1);
 $Principal = New-ScheduledTaskPrincipal -GroupId "Administrators" -RunLevel Highest;
 $Settings = New-ScheduledTaskSettingsSet `
     -RunOnlyIfNetworkAvailable $true `
@@ -28,7 +27,7 @@ if (Get-ScheduledTask -TaskName "PowerExpressGUI") {
     # Download the autorun script
     Write-Progress -Activity $ProgressTitle -Status "Initializing directory";
     New-Item -Path "C:\PowerExpressGUI" -ItemType Directory -Force;
-    
+
     Write-Progress -Activity $ProgressTitle -Status "Downloading files";
     Invoke-RestMethod -Uri $AutorunUrl -OutFile $AutorunFile;
 
