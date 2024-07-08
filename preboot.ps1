@@ -49,5 +49,5 @@ else {
 Start-Sleep -Seconds 1;
 
 if ($DebugMode -eq $true) {
-    Start-Process "powershell" -Verb RunAs -Wait -NoExit -Command "echo 'Looks like PowerExpressGUI ran into an error. You can use this Command Prompt to see what went wrong, or close and continue your installation like normal.'";
+    Start-Process "powershell" -Verb RunAs -Wait -NoExit -Command "echo 'Looks like PowerExpressGUI ran into an error. You can use this terminal to see what went wrong, or close and continue your installation like normal.'";
 }
