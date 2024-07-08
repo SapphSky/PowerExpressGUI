@@ -9,7 +9,7 @@ Write-Progress -Activity $ProgressTitle -Status "Registering ScheduledTask";
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction `
     -Execute "powershell" `
-    -Argument "-WindowStyle Maximized -ExecutionPolicy Bypass -File C:\PowerExpressGUI\autorun.ps1"
+    -Argument "-WindowStyle Normal -ExecutionPolicy Bypass -File C:\PowerExpressGUI\autorun.ps1"
 
 $Trigger = New-ScheduledTaskTrigger `
     -Once `
@@ -20,7 +20,7 @@ $Principal = New-ScheduledTaskPrincipal `
     -RunLevel Highest
 
 $Settings = New-ScheduledTaskSettingsSet `
-    -Compatability Win8 `
+    -Compatibility Win8 `
     -AllowStartOnBatteries `
     -StartWhenAvailable `
     -DontStopIfGoingOnBatteries `
