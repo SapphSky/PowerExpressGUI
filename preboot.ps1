@@ -1,4 +1,3 @@
-$DebugMode = $false;
 $ProgressTitle = "PowerExpressGUI Bootstrapper";
 
 Write-Progress -Activity $ProgressTitle -Status "Registering Scheduled Task";
@@ -40,11 +39,8 @@ if (Get-ScheduledTask -TaskName "PowerExpressGUI") {
 }
 else {
     Write-Progress -Activity "PowerExpressGUI Bootstrapper" -Status "Error: Failed to register task.";
-    $DebugMode = $true;
+    Start-Process "powershell" -Verb RunAs -Wait -ArgumentList "-Command 'echo Looks like PowerExpressGUI ran into an error. You can use this terminal to see what went wrong, or close and continue your installation like normal.'";
 }
 
 Start-Sleep -Seconds 1;
 
-if ($DebugMode -eq $true) {
-    Start-Process "powershell" -Verb RunAs -Wait -ArgumentList "-Command 'echo Looks like PowerExpressGUI ran into an error. You can use this terminal to see what went wrong, or close and continue your installation like normal.'";
-}
