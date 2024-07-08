@@ -6,13 +6,13 @@ Write-Progress -Activity $ProgressTitle -Status "Registering Scheduled Task";
 $Action = New-ScheduledTaskAction -Execute "powershell" -Argument "-ExecutionPolicy Bypass -File C:\PowerExpressGUI\autorun.ps1";
 $Trigger = New-ScheduledTaskTrigger -AtLogOn -RandomDelay (New-TimeSpan -Seconds 10);
 $Principal = New-ScheduledTaskPrincipal -GroupId "Administrators" -RunLevel Highest;
-$Settings = New-ScheduledTaskSettingsSet `
-    -AllowStartIfOnBatteries $true `
-    -DeleteExpiredTaskAfter (New-TimeSpan -Days 1) `
-    -ExecutionTimeLimit (New-TimeSpan -Hours 1) `
-    -Priority 4 `
-    -RestartCount 3 `
-    -RestartInverval (New-TimeSpan -Minutes 5);
+$Settings = New-ScheduledTaskSettingsSet;
+# -AllowStartIfOnBatteries $true `
+# -DeleteExpiredTaskAfter (New-TimeSpan -Days 1) `
+# -ExecutionTimeLimit (New-TimeSpan -Hours 1) `
+# -Priority 4 `
+# -RestartCount 3 `
+# -RestartInverval (New-TimeSpan -Minutes 5);
 
 $Description = "Runs a PowerShell script that automatically downloads and installs all driver updates through PSWindowsUpdate on startup. `
 This task will automatically remove itself after 1 day.";
