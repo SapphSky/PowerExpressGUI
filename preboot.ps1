@@ -7,7 +7,7 @@ Write-Progress -Activity $ProgressTitle -Status "Registering ScheduledTask"
 # Creates a Scheduled Task to run our script at startup
 $Action = New-ScheduledTaskAction `
     -Execute 'powershell' `
-    -Argument '-ExecutionPolicy Bypass -NoExit -Command "Get-WMIObject -class Win32_ComputerSystem | select username | Out-File C:\user.txt; Invoke-RestMethod https://github.com/SapphSky/PowerExpressGUI/raw/main/main.ps1 | Invoke-Expression"'
+    -Argument '-ExecutionPolicy Bypass -NoExit -Command "Invoke-RestMethod https://github.com/SapphSky/PowerExpressGUI/raw/main/main.ps1 | Invoke-Expression"'
 
 $Trigger = New-ScheduledTaskTrigger `
     -AtLogon
@@ -20,7 +20,6 @@ $Settings = New-ScheduledTaskSettingsSet `
     -AllowStartIfOnBatteries `
     -StartWhenAvailable `
     -DontStopIfGoingOnBatteries `
-    -Priority 1
 
 Register-ScheduledTask `
     -TaskName $TaskName `
@@ -34,7 +33,6 @@ Register-ScheduledTask `
 $Task = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
 
 if ($Task) {
-    schtasks /change /tn "PowerExpressGUI" /delay "0000:30"
     Write-Progress -Activity $ProgressTitle -Status "Completed!"
     Start-Sleep -Seconds 1
 }
