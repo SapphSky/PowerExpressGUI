@@ -1,61 +1,67 @@
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName System.Windows.Forms
 
-function ResetNetwork {
-  ipconfig /release
-  ipconfig /flushdns
-  ipconfig /renew
-  netsh int ip reset
-  netsh winsock reset
-  Write-Host 'Network stack reset.';
-}
+function Cleanup {
+  # Cleanup functions. These should be ran once the use is finished with PEGUI.
 
-function GetComputerInfo {
-  Write-Host 'Getting Computer Info...';
-  Get-ComputerInfo | Out-File -FilePath 'C:\computer-info.txt';
-  Start-Sleep -Seconds 1;
-
-  if (Test-Path -Path 'C:\computer-info.txt') {
-    Write-Host 'Computer information created at C:\computer-info.txt';
-  }
-  else {
-    Write-Host 'Error: Computer information failed to generate.';
+  function ResetNetwork {
+    ipconfig /release
+    ipconfig /flushdns
+    ipconfig /renew
+    netsh int ip reset
+    netsh winsock reset
+    Write-Host 'Network stack reset.'
   }
 }
 
-function GenerateBatteryReport {
-  Write-Host 'Generating battery report...';
-  powercfg /batteryreport /output 'C:\battery-report.html' | Out-Null;
-  Start-Sleep -Seconds 1;
+function WriteComputerInfo {
+  $FilePath = "C:\computer-info.txt"
+  Write-Progress -Activity "Computer Info" -Status "Writing to $FilePath"
+  Get-ComputerInfo | Out-File -FilePath $FilePath
 
-  if (Test-Path -Path 'C:\battery-report.html') {
-    Write-Host 'Battery report created at C:\battery-report.html';
+  if (Test-Path -Path $FilePath) {
+    Write-Host "Computer info created at $FilePath"
   }
   else {
-    Write-Host 'Error: Battery report failed to generate.';
+    Write-Host "Error: Computer info failed to generate."
   }
 }
 
-function GetEnrollmentStatus {
-  Write-Host 'Checking enrollment status...';
-  dsregcmd /status | Out-File -FilePath 'C:\enrollment-status.txt';
-  Start-Sleep -Seconds 1;
+function WriteBatteryReport {
+  $FilePath = "C:\battery-report.html"
+  Write-Progress -Activity "Battery Report" -Status "Writing to $FilePath"
+  powercfg /batteryreport /output $FilePath | Out-Null
 
-  if (Test-Path -Path 'C:\enrollment-status.txt') {
-    Write-Host 'Enrollment report created at C:\enrollment-status.txt';
+  if (Test-Path -Path $FilePath) {
+    Write-Host "Battery report created at $FilePath"
   }
   else {
-    Write-Host 'Error: Enrollment report failed to generate.';
+    Write-Host "Error: Battery report failed to generate."
+  }
+}
+
+function WriteEnrollmentStatus {
+  $FilePath = "C:\enrollment-status.txt"
+
+  Write-Progress -Activity "Enrollment Status" -Status "Writing to $FilePath"
+  dsregcmd /status | Out-File -FilePath $FilePath
+  Start-Sleep -Seconds 1
+
+  if (Test-Path $EnrollmentStatusFilePath) {
+    Write-Host "Enrollment status created at $FilePath"
+  }
+  else {
+    Write-Host "Error: Enrollment status failed to generate."
   }
 }
 
 function GetActivationStatus {
-  Invoke-RestMethod https://get.activated.win | Invoke-Expression;
+  Invoke-RestMethod https://get.activated.win | Invoke-Expression
 }
 
-GetComputerInfo;
-GenerateBatteryReport;
-GetEnrollmentStatus;
+function AutoInstallDrivers {
+  Invoke-RestMethod https://github.com/SapphSky/PowerExpressGUI/raw/main/content/driver-update.ps1 | Invoke-Expression
+}
 
 [xml]$XAML = @'
 <Window x:Class="MainWindow"
@@ -121,21 +127,15 @@ GetEnrollmentStatus;
 </Window>
 '@ -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window' -replace 'x:Class="\S+"', ''
 
-$XAMLReader = New-Object System.Xml.XmlNodeReader $XAML;
-$MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader);
+WriteComputerInfo
+WriteBatteryReport
+WriteEnrollmentStatus
 
+$XAMLReader = New-Object System.Xml.XmlNodeReader $XAML
+$MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader)
 $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $MainWindow.FindName($_.Name) }
 
-$InstallDriverUpdateButton.Add_Click({
-    CreateScheduledDriverUpdateTask;
-    $InstallDriverUpdateButton.Enabled = $false;
-    $InstallDriverUpdateButton.Label = 'Task created. Driver updates will run on next boot.';
-  })
+$InstallDriverUpdateButton.Add_Click({ AutoInstallDrivers })
 $GetActivationStatusButton.Add_Click({ GetActivationStatus })
-$ReloadButton.Add_Click({
-    Start-Job -ScriptBlock { Start-Process powershell -Wait -Verb RunAs -ArgumentList '-NoLogo -NoExit -Command "irm https://github.com/SapphSky/PowerExpressGUI/raw/main/main.ps1 | iex"' };
-    Get-Job | Wait-Job;
-    $MainWindow.Close();
-  })
 
-$MainWindow.ShowDialog() | Out-Null;
+$MainWindow.ShowDialog() | Out-Null
