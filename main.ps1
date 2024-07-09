@@ -102,6 +102,7 @@ function AutoInstallDrivers {
                 <Grid>
                   <Button x:Name="InstallDriverUpdateButton" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10, 10, 0, 0" Content="Install Driver Updates" />
                   <Button x:Name="GetActivationStatusButton" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10, 35, 0, 0" Content="Check Activation Status" />
+                  <Button x:Name="OpenRetestButton" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10, 60, 0, 0" Content="Open Retest" />
                 </Grid>
             </TabItem>
             <TabItem Header="Computer Info">
@@ -137,5 +138,6 @@ $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) 
 
 $InstallDriverUpdateButton.Add_Click({ AutoInstallDrivers })
 $GetActivationStatusButton.Add_Click({ GetActivationStatus })
+$OpenRetestButton.Add_Click({ start msedge --no-first-run http://retest.us/laptop-no-keypad })
 
 $MainWindow.ShowDialog() | Out-Null
