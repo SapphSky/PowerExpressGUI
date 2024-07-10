@@ -72,7 +72,7 @@ function WriteEnrollmentStatus {
   dsregcmd /status | Out-File -FilePath $FilePath
   Start-Sleep -Seconds 1
 
-  if (Test-Path $EnrollmentStatusFilePath) {
+  if (Test-Path $FilePath) {
     Write-Host "Enrollment status created at $FilePath"
   }
   else {
