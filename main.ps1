@@ -5,11 +5,7 @@
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName System.Windows.Forms
 
-$Version.Major = 1
-$Version.Minor = 0
-$Version.Patch = 2
-$Version.Release = "$Major.$Minor.$Patch"
-$PwrExpDir = "$env:temp"
+$Version = "1.0.2"
 
 # Functions
 # Cleanup should be ran once the use is finished using the script.
@@ -119,7 +115,7 @@ function AutoInstallDrivers {
                 </LinearGradientBrush>
             </Label.Foreground>
         </Label>
-        <Label Content="Version 1.0.1 | By Joel Fargas"
+        <Label Content="Version $Version | By Joel Fargas"
                VerticalAlignment="Bottom"
                FontSize="10"
                HorizontalAlignment="Left"/>
