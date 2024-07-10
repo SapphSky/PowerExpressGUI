@@ -1,6 +1,6 @@
 > ### Project at risk of failure
 >
-> This project is still in development. Unfortunately because Windows Task Scheduler does not work as intended in the current ISO versions of Windows 10 22H2 and Windows 11 23H2, I am unable to find a workaround to launching post-install. If you have a solution or would like to contribute, it would be greatly appreciated. More information regarding the problem will be described below in the
+> This project is still in development. Unfortunately because Windows Task Scheduler does not work as intended in the current ISO versions of Windows 10 22H2 and Windows 11 23H2, I am unable to find a workaround to launching post-install. If you have a solution or would like to contribute, it would be greatly appreciated. More information regarding the problem will be described below.
 
 # PowerExpressGUI
 
