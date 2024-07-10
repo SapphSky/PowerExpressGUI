@@ -1,9 +1,17 @@
+# Main script for PowerExpressGUI. This script is responsible for the main GUI and the functions that are called by the GUI.
+
+# Imports
+# PresentationFramework and WindowsForms is required for the GUI.
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName System.Windows.Forms
 
+# Functions
+# Cleanup should be ran once the use is finished using the script.
 function Cleanup {
-  # Cleanup functions. These should be ran once the use is finished with PEGUI.
 
+  # ResetNetwork resets the network stack.
+  # We don't want the next owner to have an existing network connection when they use the computer.
+  # The commands run here are referenced from https://www.intel.com/content/www/us/en/support/articles/000058982/wireless/intel-killer-wi-fi-products.html
   function ResetNetwork {
     ipconfig /release
     ipconfig /flushdns
@@ -12,8 +20,19 @@ function Cleanup {
     netsh winsock reset
     Write-Host 'Network stack reset.'
   }
+
+  # CleanFiles removes the files that were created by the script.
+  # Since we aren't writing these to a temp directory, we need to clean them up.
+  function CleanFiles {
+    Remove-Item -Path "C:\computer-info.txt"
+    Remove-Item -Path "C:\battery-report.html"
+    Remove-Item -Path "C:\enrollment-status.txt"
+    Write-Host 'Files cleaned.'
+  }
 }
 
+# WriteComputerInfo writes the Get-ComputerInfo output to a file.
+# This is handy to see the computer's information at a glance.
 function WriteComputerInfo {
   $FilePath = "C:\computer-info.txt"
   Write-Progress -Activity "Computer Info" -Status "Writing to $FilePath"
@@ -27,6 +46,8 @@ function WriteComputerInfo {
   }
 }
 
+# WriteBatteryReport saves the battery report to a file.
+# We need this for obvious reasons.
 function WriteBatteryReport {
   $FilePath = "C:\battery-report.html"
   Write-Progress -Activity "Battery Report" -Status "Writing to $FilePath"
@@ -40,6 +61,10 @@ function WriteBatteryReport {
   }
 }
 
+# WriteEnrollmentStatus saves the enrollment status to a file.
+# Currently, we are calling this too early in the computer's lifespan.
+# The computer hasn't connected with Windows Autopilot or Intune yet to get the latest status.
+# TODO: Find a command that calls the Windows Intune API to get the latest status.
 function WriteEnrollmentStatus {
   $FilePath = "C:\enrollment-status.txt"
 
@@ -55,14 +80,22 @@ function WriteEnrollmentStatus {
   }
 }
 
+# GetActivationStatus calls the activation status script from the activation server.
+# This is useful to see if the computer is activated or not.
 function GetActivationStatus {
   Invoke-RestMethod https://get.activated.win | Invoke-Expression
 }
 
+# AutoInstallDrivers calls the driver update script from the driver update server.
+# This will help reduce install times on the computer. No need to go through Windows Update!
 function AutoInstallDrivers {
-  Invoke-RestMethod https://github.com/SapphSky/PowerExpressGUI/raw/main/content/driver-update.ps1 | Invoke-Expression
+  Start-Process powershell -Verb RunAs -Wait -ArgumentList '-NoExit -ExecutionPolicy Bypass -Command "Invoke-RestMethod https://github.com/SapphSky/PowerExpressGUI/raw/main/content/driver-update.ps1 | Invoke-Expression"'
 }
 
+# Our GUI is created using XAML.
+# This is a simple GUI that has buttons to call the functions above.
+# The buttons are placed in a grid layout, and we have tabs to view our generated files.
+# You can build one using Microsoft Blend in Visual Studio!
 [xml]$XAML = @'
 <Window x:Class="MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
@@ -72,14 +105,13 @@ function AutoInstallDrivers {
         Width="800"
         Height="450"
         WindowStartupLocation="CenterScreen"
-        WindowState="Maximized"
         ResizeMode="NoResize">
     <Grid>
         <Label Content="PowerExpressGUI"
                HorizontalAlignment="Center"
                Margin="0,0,0,0"
                VerticalAlignment="Top"
-               FontSize="32"
+               FontSize="28"
                FontWeight="Bold">
             <Label.Foreground>
                 <LinearGradientBrush EndPoint="0.5,1"
@@ -90,8 +122,7 @@ function AutoInstallDrivers {
                 </LinearGradientBrush>
             </Label.Foreground>
         </Label>
-        <Button x:Name="ReloadButton" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="0, 0, 10, 10" Content="Reload" />
-        <Label Content="Version 1.0.0 | Made with PowerShell"
+        <Label Content="Version 1.0.1 | By Joel Fargas"
                VerticalAlignment="Bottom"
                FontSize="10"
                HorizontalAlignment="Left"/>
@@ -128,16 +159,22 @@ function AutoInstallDrivers {
 </Window>
 '@ -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window' -replace 'x:Class="\S+"', ''
 
+# Before we can show the GUI, we need to call the functions to generate the files.
 WriteComputerInfo
 WriteBatteryReport
 WriteEnrollmentStatus
 
+# We need to set the variables for the buttons.
+# This is so we can call the functions when the buttons are clicked.
 $XAMLReader = New-Object System.Xml.XmlNodeReader $XAML
 $MainWindow = [Windows.Markup.XamlReader]::Load($XAMLReader)
 $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) -Value $MainWindow.FindName($_.Name) }
 
+# We need to add the click events to the buttons.
+# This is so we can call the functions when the buttons are clicked.
 $InstallDriverUpdateButton.Add_Click({ AutoInstallDrivers })
 $GetActivationStatusButton.Add_Click({ GetActivationStatus })
 $OpenRetestButton.Add_Click({ start msedge --no-first-run http://retest.us/laptop-no-keypad })
 
+# And finally we can show our GUI!
 $MainWindow.ShowDialog() | Out-Null
