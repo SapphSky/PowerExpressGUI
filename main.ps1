@@ -5,6 +5,12 @@
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName System.Windows.Forms
 
+$Version.Major = 1
+$Version.Minor = 0
+$Version.Patch = 2
+$Version.Release = "$Major.$Minor.$Patch"
+$PwrExpDir = "$env:temp"
+
 # Functions
 # Cleanup should be ran once the use is finished using the script.
 function Cleanup {
@@ -20,21 +26,12 @@ function Cleanup {
     netsh winsock reset
     Write-Host 'Network stack reset.'
   }
-
-  # CleanFiles removes the files that were created by the script.
-  # Since we aren't writing these to a temp directory, we need to clean them up.
-  function CleanFiles {
-    Remove-Item -Path "C:\computer-info.txt"
-    Remove-Item -Path "C:\battery-report.html"
-    Remove-Item -Path "C:\enrollment-status.txt"
-    Write-Host 'Files cleaned.'
-  }
 }
 
 # WriteComputerInfo writes the Get-ComputerInfo output to a file.
 # This is handy to see the computer's information at a glance.
 function WriteComputerInfo {
-  $FilePath = "C:\computer-info.txt"
+  $FilePath = "$PwrExpDir\computer-info.txt"
   Write-Progress -Activity "Computer Info" -Status "Writing to $FilePath"
   Get-ComputerInfo | Out-File -FilePath $FilePath
 
@@ -49,7 +46,7 @@ function WriteComputerInfo {
 # WriteBatteryReport saves the battery report to a file.
 # We need this for obvious reasons.
 function WriteBatteryReport {
-  $FilePath = "C:\battery-report.html"
+  $FilePath = "$PwrExpDir\battery-report.html"
   Write-Progress -Activity "Battery Report" -Status "Writing to $FilePath"
   powercfg /batteryreport /output $FilePath | Out-Null
 
@@ -66,7 +63,7 @@ function WriteBatteryReport {
 # The computer hasn't connected with Windows Autopilot or Intune yet to get the latest status.
 # TODO: Find a command that calls the Windows Intune API to get the latest status.
 function WriteEnrollmentStatus {
-  $FilePath = "C:\enrollment-status.txt"
+  $FilePath = "$PwrExpDir\enrollment-status.txt"
 
   Write-Progress -Activity "Enrollment Status" -Status "Writing to $FilePath"
   dsregcmd /status | Out-File -FilePath $FilePath
@@ -96,7 +93,7 @@ function AutoInstallDrivers {
 # This is a simple GUI that has buttons to call the functions above.
 # The buttons are placed in a grid layout, and we have tabs to view our generated files.
 # You can build one using Microsoft Blend in Visual Studio!
-[xml]$XAML = @'
+[xml]$XAML = @"
 <Window x:Class="MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
@@ -139,25 +136,25 @@ function AutoInstallDrivers {
             <TabItem Header="Computer Info">
                 <Grid>
                   <WebBrowser x:Name="ComputerInfoViewport"
-                              Source="C:\computer-info.txt"/>
+                              Source="$PwrExpDir\computer-info.txt"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Battery Report">
                 <Grid>
                   <WebBrowser x:Name="BatteryReportViewport"
-                              Source="C:\battery-report.html"/>
+                              Source="$PwrExpDir\battery-report.html"/>
                 </Grid>
             </TabItem>
             <TabItem Header="Enrollment Report">
                 <Grid>
                   <WebBrowser x:Name="EnrollmentStatusViewport"
-                              Source="C:\enrollment-status.txt"/>
+                              Source="$PwrExpDir\enrollment-status.txt"/>
                 </Grid>
             </TabItem>
         </TabControl>
     </Grid>
 </Window>
-'@ -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window' -replace 'x:Class="\S+"', ''
+"@ -replace 'mc:Ignorable="d"', '' -replace "x:N", 'N' -replace '^<Win.*', '<Window' -replace 'x:Class="\S+"', ''
 
 # Before we can show the GUI, we need to call the functions to generate the files.
 WriteComputerInfo
