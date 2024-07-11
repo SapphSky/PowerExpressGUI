@@ -6,7 +6,7 @@ Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName System.Windows.Forms
 
 $Version = "1.0.4"
-$PwrExpDir = (Test-Path -Path "$env:temp") ? "$env:temp" : "C:\"
+$PwrExpDir = "C:\"
 
 # Functions
 # Cleanup should be ran once the use is finished using the script.
