@@ -5,8 +5,9 @@
 Add-Type -AssemblyName PresentationFramework
 Add-Type -AssemblyName System.Windows.Forms
 
-$Version = "1.0.2"
+$Version = "1.0.3"
 $PwrExpDir = "$env:temp"
+
 # Functions
 # Cleanup should be ran once the use is finished using the script.
 function Cleanup {
@@ -37,6 +38,7 @@ function WriteComputerInfo {
   else {
     Write-Host "Error: Computer info failed to generate."
   }
+  Write-Progress -Activity "Computer Info" -Completed
 }
 
 # WriteBatteryReport saves the battery report to a file.
@@ -52,6 +54,7 @@ function WriteBatteryReport {
   else {
     Write-Host "Error: Battery report failed to generate."
   }
+  Write-Progress -Activity "Battery Report" -Completed
 }
 
 # WriteEnrollmentStatus saves the enrollment status to a file.
@@ -71,6 +74,7 @@ function WriteEnrollmentStatus {
   else {
     Write-Host "Error: Enrollment status failed to generate."
   }
+  Write-Progress -Activity "Enrollment Status" -Completed
 }
 
 # GetActivationStatus calls the activation status script from the activation server.

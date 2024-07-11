@@ -8,6 +8,7 @@ $MaxAttempts = 5
 
 for ($i = 1; $i -le $MaxAttempts; $i++) {
     if (-Not (Get-Module -Name PSWindowsUpdate)) {
+        Write-Progress -Activity "Preparing PSWindowsUpdate Module" -Status "Attempt $i of $MaxAttempts"
         Write-Host 'Getting Package Provider'
         Get-PackageProvider -Name Nuget -ForceBootstrap | Out-Null
 
@@ -20,14 +21,14 @@ for ($i = 1; $i -le $MaxAttempts; $i++) {
 
         Write-Host 'Importing module...'
         Import-Module -Name PSWindowsUpdate -Force
+        Write-Progress -Activity "Preparing PSWindowsUpdate Module" -Completed
     }
     else {
         Write-Host "Checking for updates..."
         Install-WindowsUpdate -AcceptAll -RecurseCycle 2 -UpdateType Driver -IgnoreReboot -ErrorAction SilentlyContinue
         Write-Information "Driver updates complete! I will now restart the computer in 10 seconds."
         Write-Information "Please close this window if you don't want to restart!"
-        Start-Sleep -Seconds 10
-        Restart-Computer -Force
+        Restart-Computer -Timeout 10
         break
     }
     $i++
