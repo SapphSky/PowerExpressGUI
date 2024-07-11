@@ -171,7 +171,7 @@ $XAML.SelectNodes("//*[@Name]") | ForEach-Object { Set-Variable -Name ($_.Name) 
 # This is so we can call the functions when the buttons are clicked.
 $InstallDriverUpdateButton.Add_Click({ AutoInstallDrivers })
 $GetActivationStatusButton.Add_Click({ GetActivationStatus })
-$OpenRetestButton.Add_Click({ Invoke-Command { start msedge --no-first-run https://retest.us/laptop-no-keypad } })
+$OpenRetestButton.Add_Click({ Start-Process C:\Windows\System32\cmd.exe -ArgumentList "/C start msedge --no-first-run https://retest.us/laptop-no-keypad" })
 
 # And finally we can show our GUI!
 $MainWindow.ShowDialog() | Out-Null
