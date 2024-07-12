@@ -25,10 +25,7 @@ for ($i = 1; $i -le $MaxAttempts; $i++) {
     }
     else {
         Write-Host "Checking for updates..."
-        Install-WindowsUpdate -AcceptAll -RecurseCycle 2 -UpdateType Driver -IgnoreReboot -ErrorAction SilentlyContinue
-        Write-Information "Driver updates complete! I will now restart the computer in 10 seconds."
-        Write-Information "Please close this window if you don't want to restart!"
-        Restart-Computer -Timeout 10
+        Install-WindowsUpdate -AcceptAll -UpdateType Driver
         break
     }
     $i++
