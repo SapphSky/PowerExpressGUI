@@ -104,7 +104,7 @@ function AutoInstallDrivers {
         WindowStartupLocation="CenterScreen"
         ResizeMode="NoResize">
     <Grid>
-        <Label Content="PowerExpressGUI"
+        <Label Content="PowerExpressGUI - Brand Edition"
                HorizontalAlignment="Center"
                Margin="0,0,0,0"
                VerticalAlignment="Top"
